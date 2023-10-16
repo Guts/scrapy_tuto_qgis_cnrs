@@ -34,7 +34,7 @@ class TutorialSpider(Spider):
         :param Response response: HTTP response returned by URL requested
         """
         arts = Selector(response).css("article")
-        logging.info("La page {} contient {} articles".format(response.url, len(arts)))
+        logging.info(f"La page {response.url} contient {len(arts)} articles")
         for art in arts:
             # title
             art_title_section = art.css("div.title-and-meta")
