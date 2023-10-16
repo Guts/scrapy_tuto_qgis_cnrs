@@ -1,0 +1,13 @@
+# Project
+# -----------------------
+markdownify>=0.6,<0.13
+Pillow>=10.0.1,<11
+scrapy>=2.11,<3
+
+# Development
+# -----------------------
+black
+flake8-builtins>=2
+flake8-isort>=6
+isort>=5.7
+pre-commit>=3.2,<4
