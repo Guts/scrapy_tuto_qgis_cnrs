@@ -20,18 +20,14 @@
     "python.terminal.activateEnvironment": true,
     // Formatter
     "python.analysis.autoFormatStrings": true,
-    "python.formatting.provider": "none",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     // Linter
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
-        "--config=setup.cfg",
+    "flake8.args": [
+        "--config=pyproject.toml",
         "--verbose"
     ],
-    "python.linting.pylintEnabled": false,
     // Tests
     "python.testing.pytestArgs": [],
     "python.testing.unittestEnabled": true,
