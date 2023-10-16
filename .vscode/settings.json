@@ -13,6 +13,7 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
+    "git.enableCommitSigning": true,
     // Python environment
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.terminal.activateEnvInCurrentTerminal": true,
