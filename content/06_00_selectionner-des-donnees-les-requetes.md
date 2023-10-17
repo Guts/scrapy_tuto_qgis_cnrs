@@ -1,0 +1,31 @@
+
+# VI. Sélectionner des données : les requêtes
+
+
+A partir d'une couche vecteur, il est possible de **sélectionner des éléments répondant à un ou plusieurs critères**, en se basant sur les données **contenues dans la table attributaire** ou bien sur **la position de ces éléments**.
+
+
+Vous pouvez ainsi sélectionner par exemple des communes dont la population est supérieure à 10 000 habitants, ou les communes à l'intérieur d'un département...
+
+
+Ceci vous permet par exemple de compter le nombre d'éléments répondant à vos critères, ou bien de créer une nouvelle couche à partir de votre sélection, pour y réaliser ensuite d'autres traitements.
+
+
+Notions abordées :
+
+
+* Requêtes attributaires
+* Requêtes spatiales
+* Opérateurs
+* Fonctions
+* Utiliser une sous-sélection
+* Requêtes SQL
+* couches virtuelles
+
+
+Les données pour cette partie ainsi qu'une version PDF du tutoriel sont accessibles dans la rubrique  [téléchargement](telechargement.php "telechargement.php").
+
+
+
+
+[démarrer](06_01_req_attrib.php "06_01_req_attrib.php")

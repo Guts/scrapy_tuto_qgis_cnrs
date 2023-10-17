@@ -1,0 +1,24 @@
+
+# XI. Automatisation de traitements
+
+
+Cette onzième partie vous permettra d'aller plus loin dans votre utilisation de QGIS. Le but est ici de voir comment automatiser des traitements sous QGIS : par exemple, au lieu de découper une couche par une autre au moyen de l'outil découper, vous avez 30 couches à découper par une même autre.
+
+
+Nous allons utiliser 3 méthodes différentes pour cela.
+
+
+Notions abordées :
+
+
+* Exécution d'un outil « par lot »
+* Modeleur de traitement (graphical modeler)
+* Script Python
+
+
+Les données pour cette partie ainsi qu'une version PDF du tutoriel sont accessibles dans la rubrique  [téléchargement](telechargement.php "telechargement.php").
+
+
+
+
+[démarrer](11_01_traitement_de_base.php "11_01_traitement_de_base.php")
