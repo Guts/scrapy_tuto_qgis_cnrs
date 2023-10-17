@@ -10,7 +10,7 @@ from scraper_tuto_cnrs.utils.slugger import sluggy
 # ########## Globals ###############
 # ##################################
 # folder_output = Path("_output/" + datetime.now().strftime("%d%m%Y_%H%M"))
-folder_output = Path("_output")
+folder_output = Path("content")
 folder_output.mkdir(exist_ok=True, parents=True)
 
 

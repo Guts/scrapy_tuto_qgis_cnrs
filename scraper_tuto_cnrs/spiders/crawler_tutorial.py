@@ -33,20 +33,39 @@ class TutorialSpider(Spider):
 
         :param Response response: HTTP response returned by URL requested
         """
-        sections = response.css(
-            "html body div#wrap div#container_main_sidebar div.main ol.withroman li.plandet"
-        )
-        logging.info(f"La page {response.url} contient {len(sections)} sections")
-        for section in sections:
-            section_rel_url = section.css("a::attr(href)")[0].get()
+        # # sections
+        # sections = response.css(
+        #     "html body div#wrap div#container_main_sidebar div.main ol.withroman li.plandet"
+        # )
+        # logging.info(f"La page {response.url} contient {len(sections)} sections")
+        # for section in sections:
+        #     section_rel_url = section.css("a::attr(href)")[0].get()
 
-            if section_rel_url is not None:
+        #     if section_rel_url is not None:
+        #         yield response.follow(
+        #             section_rel_url,
+        #             callback=self.parse_article,
+        #             cb_kwargs={
+        #                 "kind": "section",
+        #                 "url_rel": section_rel_url,
+        #             },
+        #         )
+
+        # tutoriels
+        tutoriels = response.css(
+            "html body div#wrap div#container_main_sidebar div.main ol.withroman li.plandet ol.witharabic li a"
+        )
+        logging.info(f"La page {response.url} contient {len(tutoriels)} tutoriels")
+        for tuto in tutoriels:
+            tuto_rel_url = tuto.css("a::attr(href)")[0].get()
+
+            if tuto_rel_url is not None:
                 yield response.follow(
-                    section_rel_url,
+                    tuto_rel_url,
                     callback=self.parse_article,
                     cb_kwargs={
-                        "kind": "section",
-                        "url_rel": section_rel_url,
+                        "kind": "tutoriel",
+                        "url_rel": tuto_rel_url,
                     },
                 )
 
@@ -80,12 +99,28 @@ class TutorialSpider(Spider):
             )
 
             item["body"] = markdownify(
-                raw_body.getall()[1], default_title=True, heading_style="ATX"
+                raw_body.getall()[1],
+                default_title=True,
+                heading_style="ATX",
+                escape_asterisks=False,
+                escape_underscores=False,
             )
         else:
-            item["kind"] = kind
-            # item["title"] = art.xpath("/html/body/div/div[2]/div[2]/h2").getall()[0]
-            # item["body"] = art.xpath("/html/body/div/div[2]/div[2]")
+            item["title"] = response.css(
+                "div.main:nth-child(2) > h2:nth-child(1)::text"
+            ).get()
+            # corps
+            raw_body = response.css(
+                "html body div#wrap div#container_main_sidebar div.main"
+            )
+
+            item["body"] = markdownify(
+                raw_body.getall()[1],
+                default_title=True,
+                heading_style="ATX",
+                escape_asterisks=False,
+                escape_underscores=False,
+            )
 
         yield item
 
