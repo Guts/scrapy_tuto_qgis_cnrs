@@ -9,8 +9,8 @@
 
 BOT_NAME = "geotribu_scraper_tuto_cnrs"
 
-SPIDER_MODULES = ["scraper_scraper_tuto_cnrs.spiders"]
-NEWSPIDER_MODULE = "scraper_scraper_tuto_cnrs.spiders"
+SPIDER_MODULES = ["scraper_tuto_cnrs.spiders"]
+NEWSPIDER_MODULE = "scraper_tuto_cnrs.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -62,9 +62,10 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    "scraper_tuto_cnrs.pipelines.TutoCnrsPipeline": 300,
-# }
+ITEM_PIPELINES = {
+    "scraper_tuto_cnrs.pipelines.TutoCnrsPipeline": 300,
+    # "scraper_tuto_cnrs.pipelines.JsonWriterPipeline": 600,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
