@@ -33,23 +33,23 @@ class TutorialSpider(Spider):
 
         :param Response response: HTTP response returned by URL requested
         """
-        # # sections
-        # sections = response.css(
-        #     "html body div#wrap div#container_main_sidebar div.main ol.withroman li.plandet"
-        # )
-        # logging.info(f"La page {response.url} contient {len(sections)} sections")
-        # for section in sections:
-        #     section_rel_url = section.css("a::attr(href)")[0].get()
+        # sections
+        sections = response.css(
+            "html body div#wrap div#container_main_sidebar div.main ol.withroman li.plandet"
+        )
+        logging.info(f"La page {response.url} contient {len(sections)} sections")
+        for section in sections:
+            section_rel_url = section.css("a::attr(href)")[0].get()
 
-        #     if section_rel_url is not None:
-        #         yield response.follow(
-        #             section_rel_url,
-        #             callback=self.parse_article,
-        #             cb_kwargs={
-        #                 "kind": "section",
-        #                 "url_rel": section_rel_url,
-        #             },
-        #         )
+            if section_rel_url is not None:
+                yield response.follow(
+                    section_rel_url,
+                    callback=self.parse_article,
+                    cb_kwargs={
+                        "kind": "section",
+                        "url_rel": section_rel_url,
+                    },
+                )
 
         # tutoriels
         tutoriels = response.css(
