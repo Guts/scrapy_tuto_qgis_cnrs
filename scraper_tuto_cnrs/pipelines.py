@@ -14,6 +14,12 @@ folder_output = Path("_output")
 folder_output.mkdir(exist_ok=True, parents=True)
 
 
+def clean_title(in_title: str) -> str:
+    in_title = sluggy(in_title)
+    position = in_title.find("-")
+    return in_title[position + 1 :]
+
+
 class TutoCnrsPipeline:
     def process_item(self, item: Item, spider: Spider) -> Item:
         """Process each item output by a spider. It performs these steps:
@@ -29,9 +35,16 @@ class TutoCnrsPipeline:
         :rtype: Item
         """
         # -- Common
-        print(f"PIPELINE HERE: {item.get('title')}, {item.get('kind')}")
+        print(
+            f"PIPELINE HERE: {item.get('title')}, {item.get('kind')}, {item.get('url_rel')}"
+        )
 
-        out_filename = folder_output.joinpath(sluggy(item.get("title")) + ".md")
+        out_filename = folder_output.joinpath(
+            f"{item.get('section_number')}_"
+            f"{item.get('page_number')}_"
+            f"{clean_title(item.get('title')).strip()}"
+            f".md"
+        )
         out_filename.write_text(item.get("body"))
 
 

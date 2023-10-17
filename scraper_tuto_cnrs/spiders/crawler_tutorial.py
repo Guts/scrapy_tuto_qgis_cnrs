@@ -44,10 +44,13 @@ class TutorialSpider(Spider):
                 yield response.follow(
                     section_rel_url,
                     callback=self.parse_article,
-                    cb_kwargs={"kind": "section", "order": sections.index(section)},
+                    cb_kwargs={
+                        "kind": "section",
+                        "url_rel": section_rel_url,
+                    },
                 )
 
-    def parse_article(self, response: Response, kind: str, order: int):
+    def parse_article(self, response: Response, kind: str, url_rel: str):
         """Specific parsing logic for Geotribu articles
 
         :param Response response: HTTP response returned by URL requested
@@ -59,21 +62,22 @@ class TutorialSpider(Spider):
         #         ).getall()[0]
         #     )
         # )
+        settings = get_project_settings()
         item = TutoCnrsItem()
         item["kind"] = kind
-        item["order"] = order
+        item["section_number"] = url_rel.split("_")[0]
+        item["page_number"] = url_rel.split("_")[1]
+        item["url_rel"] = url_rel
+        item["url_full"] = settings.get("DEFAULT_URL_BASE") + url_rel
 
         if kind == "section":
             item["title"] = response.css(
-                "div.main:nth-child(2) > h1:nth-child(1)"
+                "div.main:nth-child(2) > h1:nth-child(1)::text"
             ).get()
             # corps
             raw_body = response.css(
                 "html body div#wrap div#container_main_sidebar div.main"
             )
-            # art_out_body = []
-            # for el in art_raw_body:
-            #     art_out_body.append(el.get())
 
             item["body"] = markdownify(
                 raw_body.getall()[1], default_title=True, heading_style="ATX"

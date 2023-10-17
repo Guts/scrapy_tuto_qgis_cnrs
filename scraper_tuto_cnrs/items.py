@@ -11,4 +11,7 @@ class TutoCnrsItem(Item):
     title = Field()
     kind = Field()
     body = Field()
-    order = Field()
+    section_number = Field()
+    page_number = Field()
+    url_rel = Field()
+    url_full = Field()
