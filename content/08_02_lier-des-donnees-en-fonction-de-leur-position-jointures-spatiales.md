@@ -1,75 +1,49 @@
 
 ## VIII.2 Lier des données en fonction de leur position : jointures spatiales
 
-
 * [Comment fonctionne une jointure spatiale ?](#VIII21 "#VIII21")
 * [Joindre des éléments un à un](#VIII22 "#VIII22")
-	+ [Premier exemple détaillé : quel chef-lieu pour quel département ?](#VIII22a "#VIII22a")
-	+ [Pour s'entraîner : quel comté pour quel site remarquable ?](#VIII22b "#VIII22b")
+    * [Premier exemple détaillé : quel chef-lieu pour quel département ?](#VIII22a "#VIII22a")
+    * [Pour s'entraîner : quel comté pour quel site remarquable ?](#VIII22b "#VIII22b")
 * [Joindre plusieurs éléments à un seul](#VIII23 "#VIII23")
-	+ [Compter le nombre de sites par comté](#VIII23a "#VIII23a")
-	+ [Calculer la population par département à partir des communes](#VIII23b "#VIII23b")
-
-
-
+    * [Compter le nombre de sites par comté](#VIII23a "#VIII23a")
+    * [Calculer la population par département à partir des communes](#VIII23b "#VIII23b")
 
 ### Comment fonctionne une jointure spatiale ?
 
-
 Pour faire une jointure, il est possible de se baser sur la **position des éléments** et non plus sur leurs données attributaires : il s'agit alors d'une jointure spatiale.
-
 
 Ce type de jointure ne peut se faire qu'entre deux couches SIG, de type point, ligne ou polygone. Il est possible par exemple de partir d'une couche de polygones et d'une couche point, et de lier à chaque polygone les données attributaires du point contenu par ce polygone.
 
-
 Notez bien que comme pour une jointure attributaire, les données qui seront jointes sont toujours les données attributaires.
-
-
 
 [![principe d'une jointure spatiale](illustrations/8_2_principe_jointure_spatiale.svg)](illustrations/8_2_principe_jointure_spatiale.svg "illustrations/8_2_principe_jointure_spatiale.svg")
 
 Dans l'exemple ci-dessus, les deux couches de départ sont une couche de département et une couche de chefs-lieux. Les données attributaires des chefs-lieux (leur nom, code et coordonnées) sont jointes aux départements en se basant sur leur position : **chaque département récupère les données du chef-lieu intersectant ce département**.
 
-
 Il existe plusieurs outils pour cela dans QGIS ; nous utiliserons celui présentant a priori le plus de possibilités.
-
 
 ### Joindre des éléments un à un
 
-
 #### Premier exemple détaillé : quel chef-lieu pour quel département ?
-
 
 Voyons tout d'abord le cas où les données correspondent une à une, par exemple pour joindre les données d'un chef-lieu au département qui lui correspond.
 
-
-
 Ouvrez un nouveau projet QGIS, ajoutez les deux couches shapefile *DEPARTEMENT* et *CHEF_LIEU*.
-
-
 
 [![superposition des chefs-lieux et des départements](illustrations/8_2_cheflieux_depts.jpg)](illustrations/8_2_cheflieux_depts.jpg "illustrations/8_2_cheflieux_depts.jpg")
 
 Ouvrez les tables attributaires des 2 couches : il n'existe pas de champ permettant de faire une jointure attributaire entre les couches (même s'il serait possible de récupérer le code du département à partir du code INSEE, mais nous ferons comme si pour les besoins de l'exercice...).
 
-
 Si vous avez le choix entre effectuer une jointure attributaire et une jointure spatiale pour le même résultat, choisissez la jointure attributaire : les temps de traitements seront moins longs, et vous vous affranchirez aussi d'éventuels problèmes liés aux géométries, par exemple des erreurs de topologie.
-
 
 Par contre, **chaque chef-lieu est situé dans un département** ; il est donc possible d'associer les 2 avec un [opérateur spatial](06_02_req_spatiales.php#VI22 "06_02_req_spatiales.php#VI22") comme par exemple **contient**.
 
-
-
 Le but de l'opération est d'**ajouter des colonnes** dans la table attributaire de la couche de départements, avec le nom du chef-lieu, son statut etc. Bien sûr, l'inverse est également possible : ajouter dans la table attributaire des chefs-lieux des colonnes avec le nom du département, son code etc.
-
-
 
 Dans la boîte à outils de traitements, rubrique **Outils généraux pour les vecteurs**, double-cliquez sur **Joindre les attributs par localisation**.
 
-
-
 [![Emplacement de l'outil de jointure spatiale dans la boîte à outils](illustrations/8_2_join_emplacement.jpg)](illustrations/8_2_join_emplacement.jpg "illustrations/8_2_join_emplacement.jpg")
-
 
 [![Fenêtre de l'outil de jointure spatiale dans la boîte à outils](illustrations/8_2_join_fenetre.jpg)](illustrations/8_2_join_fenetre.jpg "illustrations/8_2_join_fenetre.jpg")
 
@@ -81,77 +55,46 @@ Dans la boîte à outils de traitements, rubrique **Outils généraux pour les v
 * Couche issue de la jointure spatiale : laisser la valeur par défaut **Créer une couche temporaire**
 * Cliquez sur **Exécuter**
 
-
 Vous pouvez fermer la fenêtre de l'outil de jointure.
-
 
  Une couche temporaire a été ajoutée à QGIS. Ses géométries sont celles de la couche source, ici les départements.
 
-
 Ouvrez sa table attributaire : elle contient les attributs des départements et des chefs-lieux.
-
-
 
 [![Table attributaire de la couche créée par jointure spatiale, avec les données attributaires des départements et des chefs-lieux](illustrations/8_2_table_apres_jointure.jpg)](illustrations/8_2_table_apres_jointure.jpg "illustrations/8_2_table_apres_jointure.jpg")
 
-
 #### Pour s'entraîner : quel comté pour quel site remarquable ?
-
-
 
 Ouvrez un nouveau projet QGIS, ajoutez les couches *[Counties](donnees/TutoQGIS_08_Jointures.zip "donnees/TutoQGIS_08_Jointures.zip")* et *[Heritage](donnees/TutoQGIS_08_Jointures.zip "donnees/TutoQGIS_08_Jointures.zip")*, correspondant aux comtés et sites remarquables irlandais.
 
-
-
 [![Comtés et sites remarquables irlandais](illustrations/8_2_irlande_carte.jpg)](illustrations/8_2_irlande_carte.jpg "illustrations/8_2_irlande_carte.jpg")
-
-
 
 Prenez connaissance des données attributaires de ces 2 couches. Comment ajouter aux sites remarquables (données ponctuelles) les données attributaires de leur comté ?
 
-
 Boîte à outils de traitements → Outils généraux pour les vecteurs → Joindre les attributs par localisation, avec en couche source *Heritage* et en couche à joindre *Counties*. Une fois la nouvelle couche créée, vérifiez sa géométrie (sites remarquables) et ses données attributaires :
-
-
 
 [![Résultat de la jointure spatiale : points et table attributaire](illustrations/8_2_heritage_join_counties_res.jpg)](illustrations/8_2_heritage_join_counties_res.jpg "illustrations/8_2_heritage_join_counties_res.jpg")
 
-
-
-
-
 Il existe d'autres moyens pour faire une jointure spatiale, notamment en passant par une base de données relationnelle type PostgreSQL avec son extension spatiale PostGIS, ou bien à l'aide du plugin mmqgis...
-
 
 ### Joindre plusieurs éléments à un seul
 
-
 Nous avons vu le cas où l'on souhaite joindre des données une à une.
 
-
 Comment faire maintenant si **une entité dans la couche source correspond à plusieurs entités dans la couche à joindre ?** Par exemple, en reprenant l'exemple des comtés (données surfaciques) et sites remarquables (données ponctuelles) irlandais, on peut vouloir joindre les données des sites aux comtés. Chaque comté contenant plusieurs sites, il y a 2 possibilités pour faire la jointure :
-
 
 * créer autant de comtés que de sites. Les géométries des comtés seront donc en double, triple etc., chacune avec les données attributaire d'un site
 * décider d'une méthode **d'agrégation** pour joindre par exemple à chaque comté la moyenne, le nombre, la concaténation... des champs de la couche de sites. Cette dernière méthode est généralement la plus utile.
 
-
 *Avant de procéder à la jointure, il est important de bien réfléchir aux questions que l'on voudra poser par la suite aux données : que cherche-t-on à faire ? Quelle sera la prochaine étape ?*
-
 
 #### Compter le nombre de sites par comté
 
-
 Le but sera ici de compter le nombre de sites remarquables par comté.
-
-
 
 Ouvrez un nouveau projet QGIS, ajoutez les couches *[Counties](donnees/TutoQGIS_08_Jointures.zip "donnees/TutoQGIS_08_Jointures.zip")* et *[Heritage](donnees/TutoQGIS_08_Jointures.zip "donnees/TutoQGIS_08_Jointures.zip")*, correspondant aux comtés et sites remarquables irlandais.
 
-
 Boîte à outils de traitement → Outils généraux pour les vecteurs → **Joindre les attributs par localisation (résumé)**
-
-
 
 [![Fenêtre de l'outil de jointure spatiale (résumé)](illustrations/8_2_join_resume_fenetre.jpg)](illustrations/8_2_join_resume_fenetre.jpg "illustrations/8_2_join_resume_fenetre.jpg")
 
@@ -163,42 +106,25 @@ Boîte à outils de traitement → Outils généraux pour les vecteurs → **Joi
 * Couche issue de la jointure spatiale : laissez la valeur par défaut pour créer une couche temporaire
 * Cliquez sur **Exécuter**
 
-
 La couche créée possède les même géométries que la couche Counties. Ouvrez sa table attributaire.
-
-
-
 
 Quel est le comté avec le plus de sites ? Y a-t-il des comtés qui n'ont pas de sites ?
 
-
 En cliquant sur la colonne **OBJECTID_count** (tout à droite), on peut classer les comtés en fonction de leur nombre de sites.
-
 
 Le comté de Galway possède 8 sites remarquables ; les comtés de Offaly, Monaghan et Carlow n'en possèdent aucun.
 
-
 [![Extrait de la table attributaire de la couche résultat, classé par nombre de sites croissant](illustrations/8_2_counties_join_heritage_table.jpg)](illustrations/8_2_counties_join_heritage_table.jpg "illustrations/8_2_counties_join_heritage_table.jpg")
-
-
-
 
 #### Calculer la population par département à partir des communes
 
-
 Nous allons ici partir d'une couche de communes avec un champ population, et d'une couche de départements. L'objectif sera de calculer pour chaque département la population totale, la population moyenne par commune et la population médiane par commune.
-
-
 
 Ouvrez un nouveau projet QGIS, ajoutez les couches *COMMUNE* et *DEPARTEMENT*.
 
-
 Ouvrez la table attributaire de la couche de communes, vérifiez que le champ **POPULATION** soit bien présent.
 
-
 Boîte à outils de traitement → Outils généraux pour les vecteurs → **Joindre les attributs par localisation (résumé)**
-
-
 
 [![Fenêtre de l'outil de jointure spatiale (résumé)](illustrations/8_2_join_resume_fenetre_2.jpg)](illustrations/8_2_join_resume_fenetre_2.jpg "illustrations/8_2_join_resume_fenetre_2.jpg")
 
@@ -211,33 +137,19 @@ Boîte à outils de traitement → Outils généraux pour les vecteurs → **Joi
 * Couche issue de la jointure spatiale : laissez la valeur par défaut pour créer une couche temporaire
 * Cliquez sur **Exécuter**. Attention, le temps de traitement peut être un peu long.
 
-
 La couche temporaire est ajoutée à QGIS. Ses géométries sont celles des départements. Ouvrez sa table attributaire, vérifiez son contenu : on connaît maintenant pour chaque département la population totale (POPULATION_sum), la population communale moyenne (POPULATION_mean) et la population communale mediane (POPULATION_median).
-
-
-
 
 Quel est le département le moins peuplé ?
 
-
 En cliquant sur la colonne **POPULATION_sum**, on peut classer les départements en fonction de leur population. La Lozère est le département le moins peuplé avec une population de 76422 habitants.
-
 
 [![Extrait de la table attributaire de la couche résultat, du moins peuplé au plus peuplé](illustrations/8_2_depts_pop_communes_table.jpg)](illustrations/8_2_depts_pop_communes_table.jpg "illustrations/8_2_depts_pop_communes_table.jpg")
 
-
-
-
 Il est possible d'utiliser d'autres méthodes pour réaliser les jointures spatiales, par exemple avec le plugin mmqgis, ou bien via une [requête SQL](06_04_req_sql.php "06_04_req_sql.php").
-
 
 Concernant cette dernière méthode, avec utilisation des couches virtuelles, les temps de traitement sont parfois longs en particulier avec des opérateurs spatiaux. L'utilisation de Postgresql/PostGIS améliore grandement ces temps de traitement, mais ceci sort de l'objet de ce tutoriel !
 
-
-
-
 [chapitre précédent](08_01_jointure_attrib.php "08_01_jointure_attrib.php")
 [partie IX : analyse spatiale](09_00_analyse_spatiale.php "09_00_analyse_spatiale.php")
-
 
 [haut de page](#wrap "#wrap")

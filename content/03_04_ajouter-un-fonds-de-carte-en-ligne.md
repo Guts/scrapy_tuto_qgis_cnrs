@@ -1,112 +1,74 @@
 
 ## III.4 Ajouter un fonds de carte en ligne
 
-
 * [Principe](#III41 "#III41")
 * [Afficher un fonds via l'explorateur](#III42 "#III42")
-	+ [Ajouter un fonds proposé par défaut](#III42a "#III42a")
-	+ [Ajouter de nouveaux fonds](#III42b "#III42b")
+    * [Ajouter un fonds proposé par défaut](#III42a "#III42a")
+    * [Ajouter de nouveaux fonds](#III42b "#III42b")
 * [Afficher un fonds avec l'extension QuickMapServices](#III43 "#III43")
-
 
 ### Principe
 
-
 Il est possible d'afficher dans QGIS des fonds de carte « en ligne  », comme par exemple les fonds [OpenStreetMap](https://www.openstreetmap.org/ "https://www.openstreetmap.org/") ou Google Maps. **Ces fonds ne seront pas modifiables**, la seule possibilité étant de les rendre plus ou moins transparents pour les atténuer.
-
 
 Pour en savoir plus sur OpenSreetMap, c'est au [chapitre suivant](03_05_donnees_osm.php "03_05_donnees_osm.php") !
 
-
 Ajouter de tels fonds est utile pour se repérer rapidement, ou bien pour servir de fonds pour une carte ; dans ce dernier cas il faut que le fonds soit adapté à l'objectif de la carte et y apporte des informations utiles sans l'alourdir.
-
 
 De tels fonds sont dits « tuilés  » car ils sont découpés en carrés jointifs (tuiles) pour faciliter l'affichage, à chaque niveau de zoom. On parle également de tuiles XYZ, X et Y correspondant à la position de la tuile et Z au niveau de zoom. Pour en savoir plus : [la page (en anglais) de wikipedia](https://en.wikipedia.org/wiki/Tiled_web_map "https://en.wikipedia.org/wiki/Tiled_web_map")
 
-
 ### Afficher un fonds via l'explorateur
-
 
 Depuis QGIS 3, il existe une solution pour ajouter des fonds de carte sans installation d'extension.
 
-
 #### Ajouter un fonds proposé par défaut
-
-
 
 Ouvrez un nouveau projet QGIS.
 
-
 Rendez-vous dans le panneau **Explorateur** de QGIS. Si vous ne voyez pas ce panneau, activez-le via le **menu Vue → Panneaux → Explorateur**.
 
-
 Dans ce panneau Explorateur, allez dans la rubrique **XYZ Tiles** : un fonds s'y trouve par défaut : OpenStreetMap.
-
-
 
 [![panneau explorateur, rubrique xyz tiles](illustrations/3_4_xyz_tiles.jpg)](illustrations/3_4_xyz_tiles.jpg "illustrations/3_4_xyz_tiles.jpg")
 
 Double-cliquez sur ce fonds pour l'ajouter à QGIS.
 
-
-
 Beaucoup d'autres fonds sont disponibles de la même manière, mais il faut d'abord créer les connexions correspondantes. Cette manipulation ne devra être effectuée qu'une seule fois, les fonds seront ensuite accessibles dans le panneau explorateur de la même manière que le fonds OpenStreetMap proposé par défaut.
-
 
 #### Ajouter de nouveaux fonds
 
-
 Il faut tout d'abord trouver des adresses de fonds à ajouter à QGIS. Vous pouvez trouver quelques adresses [au bas de cette page](https://www.spatialbias.com/2018/02/qgis-3.0-xyz-tile-layers/ "https://www.spatialbias.com/2018/02/qgis-3.0-xyz-tile-layers/"), qui explique par ailleurs comment en obtenir d'autres. Voir aussi [la page Tile Servers du wiki OpenStreetMap](https://wiki.openstreetmap.org/wiki/Tile_servers "https://wiki.openstreetmap.org/wiki/Tile_servers"), comme décrit [plus loin](03_05_donnees_osm.php#III52 "03_05_donnees_osm.php#III52").
-
 
 Ici, nous allons ajouter un fonds en niveaux de gris utilisant les données OpenStreetMap, qui se nomme Carto Positron.
 
-
-
-Copiez l'URL du serveur Carto Positron : **https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.jpg**
-
+Copiez l'URL du serveur Carto Positron : **<https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.jpg>**
 
 Dans QGIS, panneau explorateur, clic-droit sur XYZ Tiles → Nouvelle connexion...
-
-
 
 [![Fenêtre de nouvelle connexion à un serveur de tuiles](illustrations/3_4_positron_connexion.jpg)](illustrations/3_4_positron_connexion.jpg "illustrations/3_4_positron_connexion.jpg")
 
 * Nom : il s'agit du nom qui apparaîtra dans le panneau explorateur, vous pouvez taper par exemple **Carto Positron**
 * URL : collez l'URL que vous avez préalablement copiée
 
-
 Laissez les valeurs par défaut pour les autres paramètres, cliquez sur OK.
 
-
 Le fonds Carto Positron apparaît maintenant avec le fonds OpenStreetMap dans la rubrique XYZ Tiles.
-
-
 
 [![panneau explorateur, rubrique XYZ Tiles : le fonds Carto Positron apparaît](illustrations/3_4_positron_xyz.jpg)](illustrations/3_4_positron_xyz.jpg "illustrations/3_4_positron_xyz.jpg")
 
 Double-cliquez pour l'ajouter :
 
-
-
 [![Aperçu du fonds Carto Positron : Brest](illustrations/3_4_positron_visu.jpg)](illustrations/3_4_positron_visu.jpg "illustrations/3_4_positron_visu.jpg")
-
 
 Attention à ne pas utiliser le caractère / (« slash ») dans le nom des connexions !
 
-
-Attention également, certaines url de serveurs de tuiles sont sous la forme **http://a.tile.stamen.com/toner/${z}/${x}/${y}.jpg** : il faut alors supprimer les **$** pour obtenir **http://a.tile.stamen.com/toner/{z}/{x}/{y}.jpg**.
-
+Attention également, certaines url de serveurs de tuiles sont sous la forme **<http://a.tile.stamen.com/toner/${z}/${x}/${y}.jpg>** : il faut alors supprimer les **$** pour obtenir **<http://a.tile.stamen.com/toner/{z}/{x}/{y}.jpg>**.
 
 ### Afficher un fonds avec l'extension QuickMapServices
 
-
 Une autre méthode pour ajouter des fonds de carte consiste à utiliser l'extension [QuickMapServices](https://github.com/nextgis/quickmapservices "https://github.com/nextgis/quickmapservices"), qui propose un certain nombre de fonds, notamment des fonds OpenStreetMap et Google Maps.
 
-
 L'extension QuickMapServices est similaire à l'extension **OpenLayers** sur laquelle elle est d'ailleurs basée, mais propose plus de couches et utilise un serveur de tuilage, ce qui semble provoquer moins d'erreur lors de changements de niveau de zoom et de SCR.
-
-
 
 Pour installer QuickMapServices :
  [Menu Extension → Installer/Gérer les extensions
@@ -114,47 +76,29 @@ Pour installer QuickMapServices :
 ![Menu Extension, Installer/Gérer les extensions](illustrations/4_6_extensions_menu.jpg)](#thumb "#thumb")
  : la fenêtre du gestionnaire d'extensions s'ouvre.
 
-
-
 [![Installation de QuickMapServices](illustrations/4_6_install_quickmapservices.jpg)](illustrations/4_6_install_quickmapservices.jpg "illustrations/4_6_install_quickmapservices.jpg")
 
 Dans la rubrique **Tout**, tapez « quickmap » dans la partie **Rechercher** pour limiter les résultats, sélectionnez **QuickMapServices** puis cliquez sur **Installer l'extension** en bas à droite de la fenêtre.
 
-
 Fermez la fenêtre du gestionnaire d'extensions.
-
-
 
 Par défaut, QuickMapServices permet l'ajout de quelques fonds de carte, que vous pouvez voir en allant dans le menu Internet → QuickMapservices... Il est possible d'en ajouter d'autres !
 
-
-
 Menu Internet → QuickMapServices → Settings :
 
-
 Dans l'onglet **More services**, cliquez sur le bouton **Get contributed pack**.
-
-
 
 [![Ajouter des fonds dans QuickMapServices](illustrations/4_6_quickmapservices_moreservices.jpg)](illustrations/4_6_quickmapservices_moreservices.jpg "illustrations/4_6_quickmapservices_moreservices.jpg")
 
 Rendez-vous ensuite dans l'onglet **Visibility** pour décocher les fonds qui ne vous semblent pas à première vue utiles, pour plus de clarté.
 
-
 Pour ajouter les données OSM : le menu QuickMapServices est maintenant visible dans le menu Internet. Chargez la couche **OSM standard** dans la rubrique OSM.
-
-
 
 [![Menu QuickMapServices](illustrations/4_6_menu_quickmapservices.jpg)](illustrations/4_6_menu_quickmapservices.jpg "illustrations/4_6_menu_quickmapservices.jpg")
 
-
 Quelle que soit la méthode utilisée pour charger un fonds de carte OSM, il aura pour SCR WGS84/Pseudo-Mercator (EPSG 3857). Il est possible de modifier le SCR du projet pour afficher les fonds OSM dans d'autres SCR, mais ceci peut parfois provoquer des problèmes d'affichage.
-
-
-
 
 [chapitre précédent](03_03_donnees_XY.php "03_03_donnees_XY.php")
 [chapitre suivant](03_05_donnees_osm.php "03_05_donnees_osm.php")
-
 
 [haut de page](#wrap "#wrap")

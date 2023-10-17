@@ -1,388 +1,259 @@
 
 ## VI.4 Pour aller plus loin : requêtes SQL
 
-
 * [Utiliser du SQL sans passer par un logiciel de bases de données : le concept de couche virtuelle](#VI41 "#VI41")
 * [Effectuer une requête simple avec le gestionnaire de bases de données](#VI42 "#VI42")
-	+ [Activer le gestionnaire de bases de données](#VI42a "#VI42a")
-	+ [Ecrire une requête](#VI42b "#VI42b")
-	+ [Visualiser le résultat d'une requête](#VI42c "#VI42c")
+    * [Activer le gestionnaire de bases de données](#VI42a "#VI42a")
+    * [Ecrire une requête](#VI42b "#VI42b")
+    * [Visualiser le résultat d'une requête](#VI42c "#VI42c")
 * [Pourquoi utiliser du SQL plutôt qu'une requête attributaire ou spatiale ?](#VI43 "#VI43")
-	+ [Choisir les colonnes](#VI43a "#VI43a")
-	+ [Croiser plusieurs tables](#VI43b "#VI43b")
-	+ [Un peu de spatial](#VI43c "#VI43c")
+    * [Choisir les colonnes](#VI43a "#VI43a")
+    * [Croiser plusieurs tables](#VI43b "#VI43b")
+    * [Un peu de spatial](#VI43c "#VI43c")
 * [Effectuer une requête en ajoutant une couche virtuelle](#VI44 "#VI44")
-
-
-
 
 Nous avons vu dans les chapitres précédents que QGIS offre de nombreux opérateurs pour les requêtes spatiales et attributaires. Néanmoins, ceux d'entre vous maîtrisant le **[langage SQL](https://fr.wikipedia.org/wiki/Structured_Query_Language "https://fr.wikipedia.org/wiki/Structured_Query_Language")** regretteront certains manques, notamment les [fonctions d'agrégation](http://sql.sh/fonctions/agregation "http://sql.sh/fonctions/agregation"). En outre, l'impossibilité d'écrire une requête portant à la fois sur des critères spatiaux et attributaires peut être gênante.
 
-
 Une des possibilités pour pallier ces manques est d'utiliser un logiciel de **gestion de bases de données** (SGBD) à composante spatiale, tel que [PostgreSQL/PostGIS](http://www.postgis.fr/chrome/site/docs/workshop-foss4g/doc/index.html "http://www.postgis.fr/chrome/site/docs/workshop-foss4g/doc/index.html"), ou [SQLite/SpatiaLite](http://www.sigterritoires.fr/index.php/tutoriel-bases-de-donnees-spatialite-sous-qgis-2-8-wien/ "http://www.sigterritoires.fr/index.php/tutoriel-bases-de-donnees-spatialite-sous-qgis-2-8-wien/"), ce dont ne traitera pas ce tutoriel.
-
 
 Mais si votre but est uniquement de jouir de toutes les possibilités du SQL sans avoir besoin d'une base de données, il existe une autre possibilité consistant à utiliser des **[couches virtuelles](https://docs.qgis.org/latest/en/docs/user_manual/managing_data_source/create_layers.html#creating-virtual-layers "https://docs.qgis.org/latest/en/docs/user_manual/managing_data_source/create_layers.html#creating-virtual-layers")**. Pour cela, aucune installation de logiciel supplémentaire n'est nécessaire.
 
-
 **Cette partie ne constitue pas un cours de SQL**, se limitant à expliquer l'interface de QGIS et à montrer quelques exemples. Il existe sur internet de nombreuses ressources sur l'apprentissage du SQL, comme par exemple [ici](http://sql.sh/cours/select "http://sql.sh/cours/select").
-
 
 ### Utiliser du SQL sans passer par un logiciel de bases de données : le concept de couche virtuelle
 
-
 Les **couches virtuelles** (virtual layers) sont un type particulier de couches vecteur ne contenant pas de données mais renvoyant vers d'autres couches.
-
 
 Elles permettent d'utiliser le langage SQL sur une ou plusieurs couches vectorielles chargées dans QGIS, au format shapefile, geopackage ou autre.
 
-
 Pour information, les fonctions SQL disponibles sont celles de [SQLite](https://www.sqlite.org/lang.html "https://www.sqlite.org/lang.html")/[SpatiaLite](http://www.gaia-gis.it/gaia-sins/spatialite-sql-latest.html "http://www.gaia-gis.it/gaia-sins/spatialite-sql-latest.html"). Elles sont donc un peu moins riches que celles offertes par PostgreSQL/PostGIS mais offrent tout de même beaucoup de possibilités.
-
 
 ### Effectuer une requête simple avec le gestionnaire de bases de données
 
-
 Une des manières d'utiliser les couches virtuelles dans QGIS est de passer par le **gestionnaire de bases de données** (DB Manager). Il s'agit d'une extension installée par défaut dans QGIS.
 
-
 #### Activer le gestionnaire de bases de données
-
-
 
 A partir du menu **Base de données** de QGIS, vérifiez si vous avez accès au sous-menu du
  [gestionnaire de base de données
 
 ![Menu Bases de données, Gestionnaire de bases de données](illustrations/6_4_dbmanager_menu.jpg)](#thumb "#thumb").
 
-
 Si oui, vous pouvez passer à la [partie suivante](06_04_req_sql.php#VI42b "06_04_req_sql.php#VI42b"). Si non :
 
-
 Rendez-vous dans le menu **Extension → Installer/Gérer les extensions** :
-
-
 
 [![Activation du gestionnaire de bases de données](illustrations/6_4_dbmanager_activation.jpg)](illustrations/6_4_dbmanager_activation.jpg "illustrations/6_4_dbmanager_activation.jpg")
 
 Dans la rubrique **Installées**, recherchez l'extension **DB Manager** et cochez la case correspondante, puis fermez la fenêtre du gestionnaire d'extensions.
 
-
-
 #### Ecrire une requête
-
-
 
 Ouvrez un nouveau projet dans QGIS et ajoutez-y les 3 couches *eoliennes_bretagne*, *communes_Bretagne* et *DEPARTEMENT* situées dans le dossier **[TutoQGIS_06_Requetes/donnees](donnees/TutoQGIS_06_Requetes.zip "donnees/TutoQGIS_06_Requetes.zip")**.
 
-
 ![icône gestionnaire de bases de données](illustrations/6_4_dbmanager_icone.jpg)Ouvrez la fenêtre du gestionnaire de bases de données : menu **Base de données → Gestionnaire BD...**, ou bien cliquez sur l'icône correspondante dans la barre d'outils Base de données.
-
-
 
 [![Fenêtre du gestionnaire de bases de données](illustrations/6_4_dbmanager_fenetre.jpg)](illustrations/6_4_dbmanager_fenetre.jpg "illustrations/6_4_dbmanager_fenetre.jpg")
 
 Dans l'arborescence située dans la partie gauche de la fenêtre, allez dans **Couches virtuelle** → **Couches du projet** : vous devriez voir vos 3 couches chargées dans QGIS.
 
-
 Cliquez sur une des couches et allez dans l'onglet **Info**, dans la partie droite de la fenêtre. Vous pouvez y lire des informations générales sur la couche, un peu comme dans la fenêtre des propriétés, telles que le nombre d'entités, le SCR ou la liste des champs.
-
 
 Les onglets **Table** et **Aperçu** vous donne respectivement un aperçu des données attributaires et spatiales.
 
-
 ![icône de la fenêtre SQL](illustrations/6_4_fenetre_sql_icone.jpg)Cliquez ensuite sur l'icône **Fenêtre SQL**, ou bien menu **Base de données** → **Fenêtre SQL**.
-
-
 
 [![Ecriture d'une requête dans le gestionnaire de bases de données](illustrations/6_4_dbmanager_requete.jpg)](illustrations/6_4_dbmanager_requete.jpg "illustrations/6_4_dbmanager_requete.jpg")
 
 Un quatrième onglet s'ajoute, permettant d'écrire une requête SQL (il est possible d'ouvrir ainsi plusieurs onglets de requête SQL).
 
-
 Dans la moitié supérieure de cet onglet, tapez la requête suivante (cette requête sera explicitée en détail un peu plus loin) :
-
 
 SELECT * FROM DEPARTEMENT WHERE NOM_DEP = 'MORBIHAN'
 
-
 Vous pouvez utiliser ou non des retours à la ligne, ou des majuscules ou minuscules pour les mots clés comme Select, le résultat sera le même.
-
 
 et cliquez sur le bouton **Exécuter** : le résultat de la requête s'affiche dans la moitié inférieure de la fenêtre.
 
-
-
 #### Visualiser le résultat d'une requête
 
-
 Seule la ligne correspondante de la table attributaire est affichée dans le gestionnaire de bases de données. La sélection n'est pas visible dans la fenêtre principale de QGIS. Comment faire pour voir les géométries correspondantes dans QGIS ?
-
-
-
 
 [![Charger le résultat d'un requête dans QGIS](illustrations/6_4_dbmanager_charger.jpg)](illustrations/6_4_dbmanager_charger.jpg "illustrations/6_4_dbmanager_charger.jpg")
 
 En bas de le fenêtre du gestionnaire, cochez la case **Charger en tant que nouvelle couche** : une nouvelle rubrique apparaît :
 
-
 * Vérifiez que la colonne de géométrie **geometry** soit bien sélectionnée
 * Tapez éventuellement un nom pour la nouvelle couche (par défaut, elle se nommera CoucheRequête ou QueryLayer)
 * Et cliquez sur le bouton **Charger** pour voir le résultat dans QGIS :
 
-
-
 [![Résultat de la requête (département du Morbihan) chargé dans QGIS](illustrations/6_4_res_selection.jpg)](illustrations/6_4_res_selection.jpg "illustrations/6_4_res_selection.jpg")
-
 
 Notez que la nouvelle couche est une couche temporaire, non éditable. Pour la sauvegarder, il faut faire un clic droit sur son nom dans QGIS, Exporter, Sauvegarder les entités sous...
 
-
 Par ailleurs, si dans la fenêtre du gestionnaire de bases de données vous actualisez la liste des couches virtuelles, vous verrez cette nouvelle couche y apparaître.
-
 
 ### Pourquoi utiliser du SQL plutôt qu'une requête attributaire ou spatiale ?
 
-
 La requête utilisée était :
-
 
 SELECT *  
 FROM DEPARTEMENT  
 WHERE "NOM_DEPT" = 'MORBIHAN'
 
-
 A quoi correspond cette requête ? Regardons-la ligne par ligne :
-
 
 SELECT *
 
-
 signifie que nous allons sélectionner (**select**) toutes (la mention *****) les colonnes de la table attributaire, ainsi que la géométrie, qui est considérée comme une colonne nommée geometry, comme vous pouvez le vérifier dans l'onglet **Info**.
-
 
 FROM DEPARTEMENT
 
-
 signifie que nous allons sélectionner les colonnes de la couche *DEPARTEMENT*.
-
 
 WHERE "NOM_DEPT" = 'MORBIHAN'
 
-
 applique un critère à la requête : seules seront sélectionnées les lignes répondant à ce critère, c'est-à-dire dont la valeur pour le champ NOM_DEPT est égale à « MORBIHAN ».
-
 
 Comparons avec [la même requête dans la fenêtre de requête attributaire](06_01_req_attrib.php#VI11 "06_01_req_attrib.php#VI11"), où seul le critère **"NOM_DEPT" = 'MORBIHAN'** est nécessaire, le début de la requête étant « sous-entendu ».
 
-
 Par rapport à une requête attributaire, une requête SQL nous offre donc la possibilité :
-
 
 * de choisir les colonnes qui nous intéressent
 * d'effectuer des requêtes sur la géométrie
 * de croiser plusieurs tables
 
-
 #### Choisir les colonnes
 
-
 Pour que le résultat de la requête ne comporte que les colonnes voulues, il suffit de les lister dans la requête.
-
-
-
 
 [![Choix des colonnes dans la requête SQL](illustrations/6_4_colonnes.jpg)](illustrations/6_4_colonnes.jpg "illustrations/6_4_colonnes.jpg")
 
 Toujours dans l'onglet **Requête** du gestionnaire de bases données, remplacez l'étoile par **INSEE_DEP, NOM_DEP, geometry** :
 
-
 SELECT INSEE_DEP, NOM_DEP, geometry  
 FROM DEPARTEMENT  
 WHERE NOM_DEP = 'MORBIHAN'
 
-
 Et cliquez sur le bouton **Exécuter** : seules les colonnes voulues sont renvoyées par la requête. Notez que vous pouvez choisir l'ordre des colonnes.
-
-
 
 Comme précédemment, vous pouvez si vous le désirez charger ce résultat dans QGIS en tant que nouvelle couche.
 
-
 #### Croiser plusieurs tables
-
 
 Comment faire si nous voulons maintenant croiser plusieurs tables, par exemple obtenir pour chaque commune le nom de son département ?
 
-
 Cette information n'existe pas dans la couche de communes mais on peut la trouver dans la couche de département. On peut faire le lien entre les 2 couches grâce au code de département, présent dans les 2 couches. Il sera donc possible de « rapatrier » le nom du département de la couche de départements vers la couche de communes.
-
 
 Cette manipulation revient en fait à effectuer une [jointure attributaire](08_01_jointure_attrib.php "08_01_jointure_attrib.php").
 
-
-
 La première étape est de vérifier qu'il existe bien un champ permettant de faire le lien entre les deux couches. Ici, il s'agit du champ **INSEE_DEP** présent dans les deux couches, ce que vous pouvez vérifier en ouvrant leurs tables attributaires (à noter que ce champ pourrait avoir un nom différent dans chacune des couches sans que cela ne pose problème).
 
-
 Tapez ensuite la requête suivante (vous pouvez effacer la précédente) :
-
 
 SELECT c.INSEE_COM, c.NOM_COM, d.NOM_DEP, c.geometry
 FROM communes_Bretagne as c, DEPARTEMENT as d
 WHERE c.INSEE_DEP = d.INSEE_DEP
 
-
-
 [![Exemple de requête SQL croisant deux couches](illustrations/6_4_croiser_couches.jpg)](illustrations/6_4_croiser_couches.jpg "illustrations/6_4_croiser_couches.jpg")
 
 Le résultat s'affiche : une ligne par commune, avec les colonnes choisies. Par rapport à la couche originale de communes, une information provenant de la couche de départements a été ajoutée, le nom du département.
 
-
-
 Prenons cette requête ligne par ligne (mais dans le désordre !) :
-
 
 from communes_Bretagne as c, DEPARTEMENT as d
 
-
 signifie deux choses : que les deux couches en jeu seront *communes_Bretagne* et *DEPARTEMENT*, et que dans le reste de la requête, les noms de ces deux couches seront abrégés respectivement en **c** et **d**.
-
 
 Cette abréviation des noms de couches n'est pas obligatoire ; elle permet néanmoins de taper moins de texte, et de gagner en clarté. Un autre avantage est que si vous deviez réutiliser cette requête pour d'autres couches, vous n'auriez à modifier qu'une seule fois leur nom.
 
-
 select c.INSEE_COM, c.NOM_COM, d.NOM_DEP, c.geometry
-
 
  indique quelles colonnes vont être récupérées. Comme il est possible qu'une colonne existe dans les deux couches (cas de **geometry** ici), le nom abrégé de la table (**c** ou **d**) est indiqué devant. Même si cette désambiguïsation n'est pas toujours nécessaire (pour **INSEE_COM** par exemple), il est conseillé de toujours indiquer le nom de la couche pour des raisons de clarté.
  where c.INSEE_DEP = d.INSEE_DEP
 
-
 permet au logiciel de savoir comment faire le lien entre les lignes des tables des deux couches. Il s'agit de l'équivalent d'une [jointure attributaire](08_01_jointure_attrib.php "08_01_jointure_attrib.php").
-
 
 Il est donc possible de faire intervenir dans une même requête autant de couches que vous le désirez, à condition de pouvoir faire le lien entre ces couches (dernière ligne de la requête).
 
-
 #### Un peu de spatial
-
 
 Comment est-il possible d'utiliser la colonne de géométrie ? Essayons par exemple de sélectionner les communes contenant des éoliennes, comme déjà réalisé précédemment au moyen d'une [requête spatiale](06_02_req_spatiales.php#VI21 "06_02_req_spatiales.php#VI21").
 
-
 Pour rappel, croiser deux couches est plus facile si elles sont dans le même SCR (même s'il est possible de modifier le SCR en SQL directement dans la requête !).
 
-
-
 Nous pouvons déjà écrire les deux premières lignes de notre requête, par exemple :
-
 
 SELECT c.INSEE_COM, c.NOM_COM, c.geometry  
 FROM communes_Bretagne as c, eoliennes_bretagne as e
 
-
 mais il nous manque le critère spatial indiquant que les communes doivent contenir au moins une éolienne.
-
 
 Une recherche dans la [liste des fonctions SpatiaLite](http://www.gaia-gis.it/gaia-sins/spatialite-sql-latest.html "http://www.gaia-gis.it/gaia-sins/spatialite-sql-latest.html") et plus spécifiquement dans la partie consacrée aux [fonctions testant les relations spatiales](http://www.gaia-gis.it/gaia-sins/spatialite-sql-latest.html#p12 "http://www.gaia-gis.it/gaia-sins/spatialite-sql-latest.html#p12") nous permet de trouver l'opérateur **Contains** et de compléter notre requête :
 
-
 WHERE Contains(c.geometry, e.geometry)
-
 
 ce qui se traduit par : la géométrie des communes doit contenir la géométrie des éoliennes.
 
-
 A ce stade, notre requête ressemble à ceci :
-
 
 SELECT c.INSEE_COM, c.NOM_COM, c.geometry  
 FROM communes_Bretagne as c, eoliennes_bretagne as e  
 WHERE contains(c.geometry, e.geometry)
 
-
 Cette requête fonctionne, mais mettra du temps à s'exécuter. Pour accélerer les choses, nous pouvons ajouter un critère avec cette ligne :
 
-
-AND e._search_frame_ = c.geometry
-
+AND e.*search_frame* = c.geometry
 
 Cette commande un peu obscure veut dire en réalité que les éoliennes doivent être recherchées uniquement dans les communes : le logiciel ne perd donc pas de temps avec les éoliennes qui seraient hors des communes. Pour nous autres humains, tout cela est un peu obscur, mais ça marche !
 
-
 Dans PostGIS, les index sont gérés de manière transparente et cette ligne n'est donc pas nécessaire.
 
-
 Exécutez la requête :
-
-
 
 [![Exemple de requête SQL spatiale croisant deux couches](illustrations/6_4_contains_1.jpg)](illustrations/6_4_contains_1.jpg "illustrations/6_4_contains_1.jpg")
 
 Si la requête ne renvoie pas de résultat, vérifiez que votre couche de communes et d'éoliennes ont bien le même SCR.
 
-
 Dans l'aperçu des résultats, vous voyez qu'une même commune peut apparaître plusieurs fois. En fait, **chaque commune apparaît autant de fois qu'elle compte d'éoliennes.**
-
 
 Pour éviter cela, nous allons grouper toutes les lignes qui possèdent le même code INSEE, le même nom de commune et la même géométrie avec cette ligne :
 
-
 GROUP BY c.INSEE_COM, c.NOM_COM, c.geometry
-
-
 
 [![Exemple de requête SQL spatiale croisant deux couches avec clause group by](illustrations/6_4_contains_2.jpg)](illustrations/6_4_contains_2.jpg "illustrations/6_4_contains_2.jpg")
 
 Cette fois, chaque commune contenant au moins une éolienne n'apparaît qu'une seule fois.
 
-
 Il est relativement simple à partir de cette requête de compter pour chaque commune le nombre d'éoliennes qu'elle contient, en rajoutant un champ comptant le nombre d'identifiants d'éoliennes associés à une commune :
 
-
 SELECT c.INSEE_COM, c.NOM_COM, **count(e.id_mat) as nb_eoliennes**, c.geometry
-
-
 
 [![Exemple de requête SQL spatiale croisant deux couches avec clause group by et count](illustrations/6_4_contains_3.jpg)](illustrations/6_4_contains_3.jpg "illustrations/6_4_contains_3.jpg")
 
 La requête finale complète est donc :
 
-
 SELECT c.INSEE_COM, c.NOM_COM, count(e.id_mat) as nb_eoliennes, c.geometry
 FROM communes_Bretagne as c, eoliennes_bretagne as e
 WHERE contains(c.geometry, e.geometry)
-AND e._search_frame_ = c.geometry
+AND e.*search_frame* = c.geometry
 GROUP BY c.INSEE_COM, c.NOM_COM, c.geometry
 
-
-
 Ceci peut servir par exemple à visualiser le nombre d'éoliennes par commune au moyen d'une carte en cercles proportionnels :
-
-
 
 [![Carte en cercles proportionnels du nombre d'éoliennes par commune](illustrations/6_4_carte_nb_eoliennes.jpg)](illustrations/6_4_carte_nb_eoliennes.jpg "illustrations/6_4_carte_nb_eoliennes.jpg")
 
 Pour apprendre à créer ce type de carte, rendez-vous dans la partie consacrée à la [représentation des données](10_01_representation.php#X11 "10_01_representation.php#X11") !
 
-
 Il existe de nombreux opérateurs spatiaux que vous pouvez vous amuser à tester. Il est bien sûr possible d'ajouter des critères spatiaux et attributaires dans une même requête. En fait, vous pouvez à peu près effectuer toutes les opérations disponibles dans un SIG avec une requête SQL !
-
 
 Cette approche nécessite de prendre un peu de temps pour apprendre le langage SQL, mais est intéressante en terme de temps de traitement et de reproductibilité, toutes les requêtes pouvant être gardées dans un fichier texte et rejouées. Il est possible d'exécuter plusieurs requêtes à la suite, en terminant chaque requête par un point-virgule.
 
-
 ### Effectuer une requête en ajoutant une couche virtuelle
-
 
 Nous avons vu comment écrire une requête SQL à partir du gestionnaire de bases de données. Il existe une autre interface possible, en passant par le gestionnaire des sources de données.
 
-
-
 ![icône du gestionnaire de sources de données](illustrations/1_2_gestionnaire_donnees_icone.jpg)Ouvrez le gestionnaire de source de données, rubrique **Couche virtuelle** :
-
-
 
 [![Fenêtre d'ajout/édition d'une couche virtuelle avec un exemple de requête](illustrations/6_4_ajout_vl_fenetre.jpg)](illustrations/6_4_ajout_vl_fenetre.jpg "illustrations/6_4_ajout_vl_fenetre.jpg")
 
@@ -392,21 +263,13 @@ Nous avons vu comment écrire une requête SQL à partir du gestionnaire de base
 * **Test :** ce bouton permet de détecter les éventuelles erreurs présentes dans la requête
 * **Ajouter :** exécute la requête et ajoute le résultat dans QGIS.
 
-
 Vous devriez obtenir une couche temporaire similaire à celle créée précédemment.
-
-
 
 Dans cette fenêtre, la rubrique **Couches intégrées** permet de lister les couches présentes dans QGIS (bouton **Importer**) ou bien d'autres couches non chargées (bouton **Ajouter**).
 
-
 Cette fenêtre permet donc globalement la même chose que le gestionnaire de bases de données, avec une interface un peu différente. A vous de choisir celle que vous préférez !
-
-
-
 
 [chapitre précédent](06_03_req_combinees.php "06_03_req_combinees.php")
 [partie VII : calcul de champs](07_00_champs.php "07_00_champs.php")
-
 
 [haut de page](#wrap "#wrap")

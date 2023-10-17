@@ -1,15 +1,11 @@
 
 # IX. Analyse spatiale
 
-
 Dans cette partie, nous allons aborder un domaine particulièrement utile des SIG : comment croiser spatialement des données, ou créer des données à partir d'autres données.
-
 
 Nous verrons quelques exemples de traitements possibles sur des [données vecteur et raster](01_01_SIG.php#I12b "01_01_SIG.php#I12b").
 
-
 Notions abordées :
-
 
 * découpage d'une couche vecteur
 * intersection de deux couches
@@ -19,10 +15,6 @@ Notions abordées :
 * calcul de pente à partir d'un MNE
 * Calcul de la valeur d'un point en fonction d'un raster
 
-
 Les données pour cette partie ainsi qu'une version PDF du tutoriel sont accessibles dans la rubrique  [téléchargement](telechargement.php "telechargement.php").
-
-
-
 
 [démarrer](09_01_vecteur.php "09_01_vecteur.php")

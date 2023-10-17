@@ -1,7 +1,6 @@
 
 ## IX.4 Un exemple d'application : créer un maillage
 
-
 * [Principe](#IX41 "#IX41")
 * [Création d'une grille](#IX42 "#IX42")
 * [Union !](#IX43 "#IX43")
@@ -9,101 +8,65 @@
 * [Agrégation des données par maille](#IX45 "#IX45")
 * [Rastérisation](#IX46 "#IX46")
 
-
-
-
 Pour finir cette partie sur l'analyse spatiale, voici un exemple d'application mettant en jeu plusieurs notions. Il s'agira ici, à partir de données [Corine Land Cover](https://www.statistiques.developpement-durable.gouv.fr/corine-land-cover-0 "https://www.statistiques.developpement-durable.gouv.fr/corine-land-cover-0") d'occupation du sol, de **créer un maillage sous forme de grille à l'échelle de la France métropolitaine, avec pour chaque case de cette grille la surface en vignes**.
-
 
 Les mailles sont beaucoup utilisées dans différents domaines, par exemple pour étudier la répartition des espèces en écologie. Cette méthode permet de créer des représentations facilement comparables, et de travailler à différentes échelles en faisant varier la taille des mailles.
 
-
 Nous verrons d'abord comment réaliser cela avec les outils QGIS, puis dans le [chapitre suivant](09_05_maillage_sql.php "09_05_maillage_sql.php") comment automatiser cette tâche avec le langage SQL, afin de pouvoir facilement reproduire ce traitement sur d'autres données, avec une autre taille de grille...
 
-
 ...Et pour tirer partie de cette automatisation, nous finirons en [soustrayant 2 maillages](09_05_maillage_sql.php#IX56 "09_05_maillage_sql.php#IX56") afin de voir l'évolution de la surface en vignes entre 2 dates.
-
-
 
 [![maillage 10km surface en vignes 5 classes intervalles égaux](illustrations/9_4_apercu_resultatfinal.jpg)](illustrations/9_4_apercu_resultatfinal.jpg "illustrations/9_4_apercu_resultatfinal.jpg")
 Un exemple de résultat avec une taille de maille de 10km
 
 Pour ce chapitre et le suivant, vous pouvez soit télécharger les données [Corine Land Cover](https://www.statistiques.developpement-durable.gouv.fr/corine-land-cover-0 "https://www.statistiques.developpement-durable.gouv.fr/corine-land-cover-0") : [Données Métropole 2000](http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip "http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip") puis les filtrer pour ne garder que les vignes, comme détaillé dans le tutoriel, ou bien utiliser les [données en téléchargement](telechargement.php "telechargement.php") déjà filtrées (pour un téléchargement moins lourd).
 
-
 ### Principe
 
-
 Pour bien comprendre la manip, nous allons commencer par créer un maillage en utilisant les outils QGIS.
-
 
 Nous partirons des données Corine Land Cover (CLC) d'occupation du sol, en filtrant les données pour ne garder que celles correspondant au vignoble :
 
 [![données Corine Land Cover France métro vignes](illustrations/9_4_principe_depart.jpg)](illustrations/9_4_principe_depart.jpg "illustrations/9_4_principe_depart.jpg")
 
-
-
 Nous passerons ensuite par 4 étapes :
-
 
 1. **Créer une grille** sur l'emprise de la couche de départ, avec une taille de maille définie, par exemple 50 km
 2. Réaliser une **union** entre la couche d'occupation du sol et la grille, pour découper les données par les cases de la grille
 3. **Agréger** les données par maille, en calculant pour chaque maille la surface totale en vignes
 4. **Rastériser** le résultat, ce qui sera utile pour par exemple soustraire 2 maillages l'un à l'autre
 
-
 Avec une grille de résolution 50 km :
-
-
-
 
 |  |  |  |  |
 | --- | --- | --- | --- |
 | [grille maille 50km france métropolitaine](illustrations/9_4_principe_grille.jpg "illustrations/9_4_principe_grille.jpg")1. Grille | [résultat de l'union grille-données CLC vignes](illustrations/9_4_principe_union.jpg "illustrations/9_4_principe_union.jpg")2. Union | [résultat de l'agrégation par maille de la surface en vignes avec discrétisation](illustrations/9_4_principe_agreg.jpg "illustrations/9_4_principe_agreg.jpg")3. Agrégation | [résultat de la rastérisation avec discrétisation](illustrations/9_4_principe_raster.jpg "illustrations/9_4_principe_raster.jpg")4. Rastérisation |
 
-
 Si ça n'est pas clair, ne vous inquiétez pas, tout devrait s'éclaircir par la pratique !
-
 
 ### Création d'une grille
 
-
 Première étape : créer une grille. Elle devra avoir la même emprise que la couche de départ, et pour que les temps de calcul soient raisonnables nous utiliserons une taille de maille de 50 km.
-
-
 
 Ouvrez un nouveau projet QGIS, chargez la couche shapefile [CLC00_FR_RGF](http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip "http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip") ou bien *[CLC00_221_FR_RGF](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* (données déjà filtrées pour ne garder que les vignes).
 
-
 Vous pouvez également chargez la couche de pays *[ne_50m_admin_0_countries](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* qui nous aidera à nous repérer.
 
-
 Pour comprendre les données CLC, ouvrez la table attributaire, qui comporte 3 champs :
-
 
 * **CODE_00** correspond au type d'occupation du sol. Pour connaître la signification des codes, lisez le fichier *[CLC_nomenclature.xls](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* dans le dossier **TutoQGIS_09_AnalyseSpat/metadonnees**.
 * **AREA_HA** correspond à la surface en hectares (1 ha = 10 000 m²)
 * et **ID** est un champ d'identifiant unique
 
-
-
-
 Quel est le CRS de cette couche ? (réflexe !!!)
-
 
 Le SCR de cette couche est **IGNF:LAMB93** équivalent au RGF93/Lambert93 code EPSG 2154.
 
-
-
 Laissons de côté ces données pour le moment, et créons la grille. Pour cela, ouvrez la boîte à outils et faites une recherche sur le mot **grille** :
-
-
 
 [![Recherche du mot grille dans la boîte à outils et emplacement de l'outil 'créer une grille'](illustrations/9_4_toolbox_grille.jpg)](illustrations/9_4_toolbox_grille.jpg "illustrations/9_4_toolbox_grille.jpg")
 
 Double-cliquez sur l'outil **Créer une grille** dans la rubrique **Création de vecteurs**.
-
-
 
 [![Paramétrage de l'outil 'créer une grille'](illustrations/9_4_grille_fenetre.jpg)](illustrations/9_4_grille_fenetre.jpg "illustrations/9_4_grille_fenetre.jpg")
 
@@ -112,141 +75,91 @@ Double-cliquez sur l'outil **Créer une grille** dans la rubrique **Création de
 * **Espacement horizontal et vertical** : puisque nous voulons une taille de maille de 50 km et que nos données sont dans un SCR projeté, donc en mètres, tapez **50 000** pour ces 2 paramètres
 * **Grille** : cliquez sur le bouton **...** à droite pour spécifier l'emplacement et le nom de la grille qui sera créée → Enregistrer vers un fichier ou dans un GeoPackage, et nommez-la par exemple **grille_CLC_50km**
 
-
 Ciquez sur **Exécuter** : la grille est automatiquement ajoutée à QGIS.
-
-
 
 [![grille superposée aux données CLC et au fond NaturalEarth](illustrations/9_4_grille_resultat.jpg)](illustrations/9_4_grille_resultat.jpg "illustrations/9_4_grille_resultat.jpg")
 
 Ouvrez la table attributaire de la grille :
 
-
-
 [![Extrait de la table attributaire de la grille](illustrations/9_4_grille_table.jpg)](illustrations/9_4_grille_table.jpg "illustrations/9_4_grille_table.jpg")
 
 La table comporte un champ d'identifiant unique, et 4 champs correspondant aux coordonnées minimales et maximales de chaque case. Les cases sont numérotées de haut en bas et de gauche à droite.
 
-
-
 Notre but est de récupérer pour chaque case la surface en vigne correspondante. Nous allons voir maintenant que pour cela, l'union fait la force ! (et l'agrégation aussi).
-
 
 ### Union !
 
-
 Qu'est-ce que l'union ? Il s'agit d'une opération du même type que l'intersection, mettant en jeu 2 couches. A la différence de l'intersection où seules les parties communes aux 2 couches sont gardées, on récupère après une union les parties communes mais aussi les parties présentes dans une seule des couches.
 
-
 La couche résultat est une couche « à plat », sans superposition.
-
-
 
 [![Explication union : couches en entrée et couche résultat](illustrations/9_4_union_principe.svg)](illustrations/9_4_union_principe.svg "illustrations/9_4_union_principe.svg")
 Union : couche en entrée 1, couche en entrée 2 et couche résultat : elle contient 3 polygones distincts, sans superposition.
 
 Notre but sera ici de faire une union entre la grille et les données CLC sur la vigne. La première étape sera de ne garder que les données CLC qui nous intéressent.
 
-
 Cette étape n'est pas nécessaire si vous utilisez la couche *[CLC00_221_FR_RGF](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* disponible en téléchargement.
-
 
 Il existe plusieurs possibilités pour cela, on pourrait par exemple sélectionner les vignes avec une requête attributaire puis exporter la sélection pour en faire une nouvelle couche.
 
-
 Pour changer un peu, nous allons ici [filtrer](01_02_info_geo.php#I23c "01_02_info_geo.php#I23c") les données, ce qui permet de n'afficher que les données répondant à un critère, à la fois dans la table et sur la carte.
-
 
 Quelle que soit la méthode choisie, l'important est de garder les données originales, pour pouvoir y revenir en cas de besoin !
 
-
-
 Il faut d'abord rechercher quel est le code correspondant au vignoble : ouvrez le fichier *[CLC_nomenclature.xls](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* dans le dossier **TutoQGIS_09_AnalyseSpat/metadonnees**.
 
-
 Recherchez le code correspondant au vignoble :
-
-
 
 [![fichier tableur avec le code 2210 pour le vignoble](illustrations/9_4_code_vignoble.jpg)](illustrations/9_4_code_vignoble.jpg "illustrations/9_4_code_vignoble.jpg")
 
 Il s'agit du code **2210**.
 
-
 Clic-droit sur la couche *CLC00_FR_RGF* → **Filtrer...** :
-
 
 Utilisez l'expression **"CODE_00" = '221'** pour ne garder que les entités ayant pour valeur 221 pour le champ CODE_00, qui correspondent donc aux vignes.
 
-
 Si besoin référez-vous [ici](01_02_info_geo.php#I23c "01_02_info_geo.php#I23c") !
-
-
 
 A ce stade, votre projet doit donc ressembler à ceci :
 
-
-
 [![projet QGIS avec les 3 couches CLC vignes, grille et fonds Natural Eartg](illustrations/9_4_couches.jpg)](illustrations/9_4_couches.jpg "illustrations/9_4_couches.jpg")
 
-
 Nous pouvons maintenant procéder à l'union. Comme d'habitude, pour trouver l'outil adéquat, utilisez la barre de recherche de la boîte à outils avec le mot **union** :
-
-
 
 [![Emplacement de l'outil Union dans la boîte à outils](illustrations/9_4_union_toolbox.jpg)](illustrations/9_4_union_toolbox.jpg "illustrations/9_4_union_toolbox.jpg")
 
 Double-cliquez sur **Union** dans la rubrique **Recouvrement de vecteur** :
-
-
 
 [![Paramétrage de l'outil d'union](illustrations/9_4_union_fenetre.jpg)](illustrations/9_4_union_fenetre.jpg "illustrations/9_4_union_fenetre.jpg")
 
 * Couche source et couche de superposition : choisissez **grille_CLC_50km** et **CLC00_FR_RGF**. Il est possible de choisir l'une ou l'autre des couches en premier, seul l'ordre des champs changera dans la table attributaire.
 * Union : cliquez sur le bouton **...** à droite, et enregistrez le résultat au format shapefile ou GeoPackage. Nommez-le par exemple **union_grille50km_CLC**.
 
-
 **Exécuter**, patientez...
 
-
 Vous pouvez vérifiez dans le résultat que l'union a bien été exécuté, les vignobles ayant été découpés selon les cases de la grille :
-
-
 
 [![aperçu de la couche d'union avec sélection d'un polygone de vignes](illustrations/9_4_union_resultat.jpg)](illustrations/9_4_union_resultat.jpg "illustrations/9_4_union_resultat.jpg")
 
 Ouvrez la table attributaire :
 
-
-
 [![aperçu de la table attributaire de la couche d'union](illustrations/9_4_union_table.jpg)](illustrations/9_4_union_table.jpg "illustrations/9_4_union_table.jpg")
 
 Les champs des 2 couches en entrée sont présents.
 
-
-
 ### Recalcul de la surface
-
 
 Notre but étant de calculer la surface en vigne par maille, nous allons mettre à jour le champ AREA_HA. En effet, les valeurs contenues dans ce champ correspondent à la surface des polygones avant découpage et ne sont donc pas à jour.
 
-
 Il faut donc recalculer la surface de chaque polygone, et mettre une surface nulle pour les polygones ne correspondant pas à la vigne (sélectionné en jaune ci-dessous par exemple) :
-
-
 
 [![polygone 'de fond' sélectionné en jaune](illustrations/9_4_non_vigne.jpg)](illustrations/9_4_non_vigne.jpg "illustrations/9_4_non_vigne.jpg")
 
 Ces polygones étaient présent uniquement dans la couche de grille, ils n'ont donc pas reçu d'attributs de la couche de vignes : **les champs ID_2, CODE_00 et AREA_HA ont une valeur nulle**.
 
-
 Il serait possible de sauter cette étape et de recalculer la surface à partir de l'outil d'agrégation. Mais pour plus de clarté nous séparerons les 2 étapes !
 
-
-
 Passez en [mode édition](05_02_points.php#V21 "05_02_points.php#V21") pour la couche d'union, et ouvrez la [calculatrice de champ](07_02_calculer.php "07_02_calculer.php") à partir de la table attributaire :
-
-
 
 [![fenêtre de la calculatrice de champ avec la formule pour recalculer la surface](illustrations/9_4_recalc_fenetre.jpg)](illustrations/9_4_recalc_fenetre.jpg "illustrations/9_4_recalc_fenetre.jpg")
 
@@ -256,83 +169,55 @@ Passez en [mode édition](05_02_points.php#V21 "05_02_points.php#V21") pour la c
 * Nous allons utiliser une fonction conditionnelle pour ne calculer la surface que pour les polygones de vignes, c'est-à-dire dont la valeur pour le champ AREA_HA n'est pas nulle. Nous utiliserons donc la fonction **if** (rubrique Conditions) dont vous pouvez lire l'aide.
 * L'expression est donc la suivante :  **if("AREA_HA" is not null, $area/10000, 0)**. Cela signifie que si le champ AREA_HA n'a pas de valeur nulle, il sera recalculé selon l'expression **$area/10000**, c'est-à-dire la surface en hectares, et sinon il prendra la valeur zéro.
 
-
 Cliquez sur **OK**, vérifiez le résultat dans la table attributaire, et [quittez le mode édition](05_02_points.php#V24 "05_02_points.php#V24") en enregistrant les modifications.
-
-
 
 Il ne nous reste plus qu'à agréger cette surface par maille !
 
-
 ### Agrégation des données par maille
-
 
 Cette opération consiste à **additionner les surfaces en vignes par maille pour récupérer la surface totale en vigne pour chaque maille**. La couche résultat aura donc la même géométrie que la grille, mais avec en attribut pour chaque case la surface en vigne.
 
-
 Pour le logiciel, cette opération correspond à **fusionner toutes les entités ayant la même valeur pour le champ id** (identifiant de la maille) en **récupérant pour les entités fusionnées la somme des valeurs du champ AREA_HA** (surface en vignes).
-
-
 
 L'outil permettant cela se nomme **agrégation** :
 
-
-
 [![emplacement de l'outil d'agrégation dans la boîte à outils](illustrations/9_4_agreg_toolbox.jpg)](illustrations/9_4_agreg_toolbox.jpg "illustrations/9_4_agreg_toolbox.jpg")
-
 
 [![Paramétrage de l'outil d'agrégation](illustrations/9_4_agreg_fenetre.jpg)](illustrations/9_4_agreg_fenetre.jpg "illustrations/9_4_agreg_fenetre.jpg")
 
 * Couche source : votre couche d'union
 * Grouper par expression : les entités ayant la même valeur pour le champ choisi ici seront fusionnées, choisir le champ **id** correspondant à l'identifiant unique des cases de la grille
 * Agrégats : on peut définir dans cette partie quels champs garder, et pour ceux-ci quelle fonction d'agrégation utiliser. On peut par exemple :
-	+ supprimer les champs **left, top, right, bottom** issus de la grille, et **ID_2 et CODE_00** issus de la couche CLC, puisqu'ils ne nous seront pas utiles
-	+ garder le champ **id** (identifiant de la grille), avec la fonction d'agrégation **first value** : l'entité fusionnée aura la première valeur rencontrée pour ce champ (sachant que de toute manière toutes les valeurs seront égales puisqu'on fusionne selon ce champ)
-	+ garder le champ **AREA_HA** puisque c'est notre but, avec la fonction d'agrégation **sum** pour faire la somme de toutes les valeurs rencontrées pour une même case. Au passage, on en profite pour le renomme **VIGNE_HA** et en faire un champ de type **entier**, puisque les virgules à cette échelle n'auront pas vraiment de sens.
+    * supprimer les champs **left, top, right, bottom** issus de la grille, et **ID_2 et CODE_00** issus de la couche CLC, puisqu'ils ne nous seront pas utiles
+    * garder le champ **id** (identifiant de la grille), avec la fonction d'agrégation **first value** : l'entité fusionnée aura la première valeur rencontrée pour ce champ (sachant que de toute manière toutes les valeurs seront égales puisqu'on fusionne selon ce champ)
+    * garder le champ **AREA_HA** puisque c'est notre but, avec la fonction d'agrégation **sum** pour faire la somme de toutes les valeurs rencontrées pour une même case. Au passage, on en profite pour le renomme **VIGNE_HA** et en faire un champ de type **entier**, puisque les virgules à cette échelle n'auront pas vraiment de sens.
 * Agrégé : comme d'habitude, cliquez sur **...** tout à droite pour spécifier le nom et l'emplacement du résultat, au format GeoPackage ou shapefile.
 
-
 **Exécuter**, patientez... et admirez le résultat :
-
-
 
 [![Couche d'agrégation](illustrations/9_4_agreg_resultat.jpg)](illustrations/9_4_agreg_resultat.jpg "illustrations/9_4_agreg_resultat.jpg")
 
 La couche a la même géométrie que notre grille, avec un champ supplémentaire indiquant pour chaque case la surface en vignes correspondante.
 
-
 Selon que votre couche est au format GeoPackage ou non, un champ fid sera présent ou non.
-
 
 En modifiant le style de cette couche, on peut avoir un aperçu de la répartition des vignes en France, par exemple avec un style gradué et 7 classes selon une discrétisation de Jenks , et en filtrant pour ne garder que les valeurs différentes de zéro :
 
-
-
 [![discrétisation en 7 classes de la surface en vigne (Jenks) sur les valeurs non nulles](illustrations/9_4_agreg_discretisation.jpg)](illustrations/9_4_agreg_discretisation.jpg "illustrations/9_4_agreg_discretisation.jpg")
-
 
 Bien sûr, le résultat serait différent avec une autre taille de maille. La répartition n'est pas la même selon l'échelle à laquelle on travaille.
 
-
 ### Rastérisation
-
 
 On pourrait s'arrêter là... Mais nous allons faire une étape de plus, pour transformer notre couche de vecteur en couche raster, où 1 maille = 1 pixel.
 
-
 Pourquoi cette opération ? Les données raster sont moins lourdes, et nous n'aurons pas de perte de précision puisque chaque maille correspondra à un pixel. Nous pourrons ensuite très facilement faire des opérations telles que soustraire 2 maillages pour 2 années différentes afin de voir l'évolution entre ces 2 années.
-
 
 Un autre avantage, plus minime, est au niveau de la représentation : sur une couche vecteur, même avec aucun contour, ceux-ci sont toujours légèrement visibles, ce qui n'est pas le cas avec un raster.
 
-
-
 Nous allons utiliser l'outil **rasteriser (vecteur vers raster)** de la boîte à outils :
 
-
-
 [![emplacement de l'outil gdal rasteriser (vecteur vers raster) dans la boîte à outils](illustrations/9_4_raster_toolbox.jpg)](illustrations/9_4_raster_toolbox.jpg "illustrations/9_4_raster_toolbox.jpg")
-
 
 [![paramétrage de l'outil gdal rasteriser (vecteur vers raster)](illustrations/9_4_raster_fenetre.jpg)](illustrations/9_4_raster_fenetre.jpg "illustrations/9_4_raster_fenetre.jpg")
 
@@ -343,41 +228,25 @@ Nous allons utiliser l'outil **rasteriser (vecteur vers raster)** de la boîte �
 * emprise du résultat : cliquez sur les **...** à droite pour spécifier une couche modèle pour l'emprise du futur raster, par exemple la grille en entrée, ou la couche d'agrégation
 * Rastérisé : spécifiez un nom et un emplacement pour le raster, ainsi que son format : **TIF**
 
-
 Par défaut, les valeurs égales à 0 ne sont pas représentées :
-
-
 
 [![Raster résultat avec le style par défaut](illustrations/9_4_raster_resultat1.jpg)](illustrations/9_4_raster_resultat1.jpg "illustrations/9_4_raster_resultat1.jpg")
 
-
 Ce comportement peut être modifié en allant dans les propriétés de la couche → Transparence et en décochant la case **Aucune valeur de données**.
-
-
 
 Pour afficher la répartition des vignes, modifiez le style de la couche en choisissant le type de rendu **pseudo-couleur à bande unique**, par exemple avec une représentation en couleur continue :
 
-
-
 [![Style du raster pour une représentation en couleur continue](illustrations/9_4_couleur_continue.jpg)](illustrations/9_4_couleur_continue.jpg "illustrations/9_4_couleur_continue.jpg")
-
 
 [![Raster résultat en couleur continue](illustrations/9_4_raster_resultat2.jpg)](illustrations/9_4_raster_resultat2.jpg "illustrations/9_4_raster_resultat2.jpg")
 
-
 Avec cette représentation utilisant une interpolation linéaire, contrairement à ce que la fenêtre pourrait laisser croire, il n'y a pas de classes : chaque valeur correspond à une couleur unique, en étirant les couleurs de début et de fin du dégradé pour les faire correspondre aux valeurs minimales et maximales.
-
 
 Bravo ! Vous êtes arrivés au résultat final !
 
-
 Vous aurez remarqué que nous avons dû procéder en plusieurs étapes, avec pour chaque étape différents paramètres à spécifier. Si nous voulons relancer cette opération pour une autre couche en entrée, il va nous falloir tout recommencer. A moins que ?
-
-
-
 
 [chapitre précédent](09_03_vecteur_raster.php "09_03_vecteur_raster.php")
 [à moins que](09_05_maillage_sql.php "09_05_maillage_sql.php")
-
 
 [haut de page](#wrap "#wrap")

@@ -1,141 +1,95 @@
 
 ## IX.5 Un exemple d'application : dites-le avec du SQL !
 
-
 * [Création d'une nouvelle base SpatiaLite ou PostGIS](#IX51 "#IX51")
-	+ [Création d'une base SpatiaLite](#IX51a "#IX51a")
-	+ [Création d'une base PostGIS](#IX51b "#IX51b")
+    * [Création d'une base SpatiaLite](#IX51a "#IX51a")
+    * [Création d'une base PostGIS](#IX51b "#IX51b")
 * [Import de données dans SpatiaLite ou PostGIS](#IX52 "#IX52")
 * [Lancer une requête simple](#IX53 "#IX53")
 * [Création d'une grille](#IX54 "#IX54")
-	+ [Créer une grille avec SpatiaLite](#IX54a "#IX54a")
-	+ [Créer une grille avec PostGIS](#IX54b "#IX54b")
+    * [Créer une grille avec SpatiaLite](#IX54a "#IX54a")
+    * [Créer une grille avec PostGIS](#IX54b "#IX54b")
 * [Union et agrégation](#IX55 "#IX55")
 * [Évolution temporelle : soustraction de 2 maillages](#IX56 "#IX56")
-	+ [Relancer l'opération sur les données Corine Land Cover 2012](#IX56a "#IX56a")
-	+ [Soustraire les 2 maillages 2012 et 2000](#IX56b "#IX56b")
-
-
-
+    * [Relancer l'opération sur les données Corine Land Cover 2012](#IX56a "#IX56a")
+    * [Soustraire les 2 maillages 2012 et 2000](#IX56b "#IX56b")
 
 Comment faire pour automatiser les opérations réalisées au [chapitre précédent](09_04_maillage.php "09_04_maillage.php"), afin de pouvoir rendre le processus plus reproductible ?
 
-
 Une première solution serait d'utiliser un **modèle**. Nous ne verrons pas ici le pas à pas pour créer le modèle en question, mais vous pouvez essayer vous-même en vous référant [ici](11_03_modeleur.php "11_03_modeleur.php") !
-
 
 Une autre solution pour automatiser ce traitement est d'utiliser des requêtes SQL. Il s'agit d'une partie « pour aller plus loin », d'un niveau plus avancé, et vous pouvez très bien décider de vous arrêter ici. Nous nous appuierons sur [cette partie](06_04_req_sql.php "06_04_req_sql.php").
 
-
 Il est possible d'utiliser 2 logiciels différents à partir de QGIS pour lancer des requêtes SQL :
-
 
 * **SQLite et son module spatial SpatiaLite** ne nécessitent pas d'installation, mais les fonctions disponibles sont plus limitées que celles de Postgresql/PostGIS
 * **Postgresql et son module spatial PostGIS** doivent être installés en plus de QGIS, mais une fois cette opération réalisée beaucoup de possibilités s'offriront à vous !
 
-
 Il n'y a pas une solution meilleure qu'une autre mais elles répondent à des besoins différents.
-
 
 **Pour cet exercice les 2 logiciels peuvent être utilisés.** Si vous choisissez Postgresql/PostGIS, l'installation ne sera pas détaillée ici mais on trouve de nombreuses ressources sur internet. La syntaxe étant légèrement différente d'un logiciel à l'autre, les requêtes seront proposées en 2 versions.
 
-
 Pour ce chapitre, vous pouvez soit télécharger les données [Corine Land Cover](https://www.statistiques.developpement-durable.gouv.fr/corine-land-cover-0 "https://www.statistiques.developpement-durable.gouv.fr/corine-land-cover-0") : [Données Métropole 2000](http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip "http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip") et [Données Métropole 2012](http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC12_FR_RGF_SHP.zip "http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC12_FR_RGF_SHP.zip") puis les filtrer pour ne garder que les vignes, comme détaillé dans le tutoriel, ou bien utiliser les [données en téléchargement](telechargement.php "telechargement.php") déjà filtrées (pour un téléchargement moins lourd).
-
 
 ### Création d'une nouvelle base SpatiaLite ou PostGIS
 
-
 La première étape consiste à créer une base de données vides dans le logiciel choisi, et à y importer les données de départ, à savoir la couche Corine Land Cover.
-
 
 **Si vous choisissez d'utiliser Postgresql/PostGIS, assurez-vous d'avoir installé ces logiciels avant de poursuivre !**
 
-
-
 Commencez par ouvrir un nouveau projet QGIS et chargez la couche [CLC00_FR_RGF](http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip "http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC00_FR_RGF_SHP.zip") ou bien *[CLC00_221_FR_RGF](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* (données déjà filtrées pour ne garder que les vignes).
-
-
 
 #### Création d'une base SpatiaLite
 
-
 Nous allons tout d'abord créer une base SpatiaLite vide.
 
-
-
 Dans le panneau **Explorateur**, faites un clic droit sur **SpatiaLite → Créer une base de données...** :
-
-
 
 [![clic droit sur spatialite](illustrations/9_5_creer_sl.jpg)](illustrations/9_5_creer_sl.jpg "illustrations/9_5_creer_sl.jpg")
 
 Naviguez jusqu'au dossier où vous souhaitez créer votre base, et nommez-la par exemple **maillage_clc**. Elle est maintenant visible dans l'explorateur :
 
-
-
 [![base spatialite créée](illustrations/9_5_bdd_sl.jpg)](illustrations/9_5_bdd_sl.jpg "illustrations/9_5_bdd_sl.jpg")
-
 
 Si vous naviguez dans l'explorateur de fichiers de votre ordinateur jusqu'à votre base de données, vous verrez qu'un fichier SQLite a été créé. Par rapport à un format comme le shapefile, une base de données est comme une boîte qui peut contenir plusieurs jeux de données.
 
-
 Une base SpatiaLite est une base SQLite qui peut gérer des données spatiales grâce au module SpatiaLite. Elle est constituée d'une seule fichier qu'on peut copier d'un dossier à l'autre.
-
 
 Ça n'est pas le cas des logiciels de bases de données « traditionnels » tels que PostgreSQL, qui fonctionnent selon une logique [client-serveur](https://fr.wikipedia.org/wiki/Client-serveur "https://fr.wikipedia.org/wiki/Client-serveur") : la base est installé sur un serveur, et des utilisateurs peuvent s'y connecter à partir d'autres ordinateurs. Bien sûr il est possible de se servir de son propre ordinateur comme de serveur, et la base ne sera accessible que depuis celui-ci : c'est ce qu'on appelle une base « en local ».
 
-
 #### Création d'une base PostGIS
-
 
 ...Et c'est ce que nous allons faire ici ! Si vous avez décidé de travailler avec SpatiaLite, passez directement à [l'import des données](#IX51c "#IX51c").
 
-
 Je pars du principe ici que vous avez déjà installé PostgreSQL et PostGIS, et que vous êtes connecté à un serveur PostgreSQL, local ou distant.
-
 
 QGIS peut uniquement se connecter à une base déjà existante, **la création d'une nouvelle base PostgreSQL/PostGIS ne peut se faire dans QGIS**.
 
-
 Il existe plusieurs méthodes pour cela, qui sortent un peu de ce tutoriel : cette partie consistera surtout en des renvois vers des tutoriels existants.
-
 
 PostgreSQL en soi ne possède pas d'interface graphique mais fonctionne en lignes de commande. Si ce mot vous fait peur, pas de panique ! Il existe plusieurs logiciels qui peuvent servir d'interface graphique à PostgreSQL et vous permettre d'arriver à vos fins en quelques clics.
 
-
 Le plus connu est peut-être [pgAdmin](https://www.pgadmin.org/ "https://www.pgadmin.org/"), qui est peut-être déjà installé sur votre ordinateur selon la manière dont vous avez installé PostgreSQL. Vous pouvez également utiliser par exemple [DBeaver](https://dbeaver.io/ "https://dbeaver.io/").
 
-
 Pour **créer une nouvelle base de données PostgreSQL**, en la nommant **maillage_clc** :
-
 
 * [en ligne de commande](https://www.postgresql.org/docs/9.1/manage-ag-createdb.html "https://www.postgresql.org/docs/9.1/manage-ag-createdb.html") ou [ici](https://www.postgresqltutorial.com/postgresql-create-database/ "https://www.postgresqltutorial.com/postgresql-create-database/")
 * avec [pgAdmin](https://www.postgresqltutorial.com/postgresql-create-database/ "https://www.postgresqltutorial.com/postgresql-create-database/") en déroulant pour aller à la partie « 3) Creating a new database using pgAdmin »
 * avec DBeaver, le principe est le même qu'avec pgAdmin : clic droit sur le serveur postgres → Créer → Database
 
-
 Il faut ensuite **donner les 2 extensions postgis et postgis_topology à la base** pour pouvoir y mettre des données géographiques. Encore une fois, vous pouvez procéder au choix :
-
 
 * [en ligne de commande](https://postgis.net/install/ "https://postgis.net/install/") avec ces 2 commandes : **CREATE EXTENSION postgis;** et **CREATE EXTENSION postgis_topology;**
 * avec pgAdmin, en faisant un clic droit sur la base → Créer → Extension puis en choisissant postgis et postgis_topology
 * avec DBeaver, sensiblement de la même manière qu'avec pgAdmin
 
-
 Votre base PostGIS est créée, il ne reste plus qu'à s'y connecter dans QGIS !
 
-
-
 ![icône du gestionnaire de données](illustrations/1_2_gestionnaire_donnees_icone.jpg)Menu Couche → Gestionnaire des sources de données ou bien clic sur l'icône correspondante, rubrique **PostgreSQL** :
-
-
 
 [![création d'une connexion à une base PostGIS](illustrations/9_5_nouvelle_connexion_psql.jpg)](illustrations/9_5_nouvelle_connexion_psql.jpg "illustrations/9_5_nouvelle_connexion_psql.jpg")
 
 Cliquez sur **Nouveau** pour créer une nouvelle connexion à notre base maillage_clc :
-
-
 
 [![Fenêtre de création d'une connexion à une base PostGIS](illustrations/9_5_nouvelle_connexion_fenetre_psql.jpg)](illustrations/9_5_nouvelle_connexion_fenetre_psql.jpg "illustrations/9_5_nouvelle_connexion_fenetre_psql.jpg")
 
@@ -145,85 +99,53 @@ Cliquez sur **Nouveau** pour créer une nouvelle connexion à notre base maillag
 * Base de données : tapez ici le nom de la base : **maillage_clc**
 * Cliquez ensuite sur **Tester la connexion** : selon votre configuration, il sera nécessaire ou non de rentrer vos identifiants
 
-
 Si le test de connexion est réussi, vous pouvez cliquer sur OK et fermer la fenêtre. Vous pouvez également fermer la fenêtre du gestionaire de sources de données.
-
 
 Votre base est maintenant visible dans l'explorateur :
 
-
-
 [![Base PostGIS visible dans l'explorateur de fichiers](illustrations/9_5_bdd_psql.jpg)](illustrations/9_5_bdd_psql.jpg "illustrations/9_5_bdd_psql.jpg")
-
 
 Une dernière étape consiste à créer un **schéma** nommé tutoqgis dans cette base. Un schéma correspond à un sous-dossier dans la base de données. Le schéma par défaut se nomme **public** mais c'est une bonne pratique de créer vos propres schémas.
 
-
-
 Rien de compliqué : toujours dans l'explorateur, clic droit sur votre base → **Nouveau schéma...**
-
-
 
 [![clic droit sur la base, créer schéma](illustrations/9_5_creer_schema.jpg)](illustrations/9_5_creer_schema.jpg "illustrations/9_5_creer_schema.jpg")
 
 Nommez-le par exemple **tutoqgis**. Votre base doit donc contenir 3 schémas : tutoqgis, public et topology.
 
-
-
 [![base maillage_clc avec ses 3 schémas](illustrations/9_5_creer_schema_res.jpg)](illustrations/9_5_creer_schema_res.jpg "illustrations/9_5_creer_schema_res.jpg")
 
 On peut aussi créer le schéma à partir du gestionnaire de bases de données.
 
-
-
 Vous remarquerez que cette étape est plus longue et complexe avec PostgreSQL. Néanmoins, une fois ce logiciel configuré et avec un peu d'habitude, il ne vous faudra plus que quelque secondes pour créer une nouvelle base !
-
 
 ### Import de données dans SpatiaLite ou PostGIS
 
-
 Cette étape est presque équivalente pour les 2 logiciels, en passant par le gestionnaire de base de données de QGIS.
-
 
 Avant d'importer les données, nous allons sélectionner dans la couche Corine Land Cover les entités correspondant au vignoble, pour n'importer que celles-ci. Cette étape pourrait tout à fait être effectuée une fois les données importées dans la base, mais comme cela le temps d'import dans SpatiaLite ou PostGIS sera plus court.
 
-
-
 Cette sélection n'est pas nécessaire si vous utilisez la couche *[CLC00_221_FR_RGF](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* disponible en téléchargement.
-
 
 Utilisez une [requête attributaire](06_01_req_attrib.php "06_01_req_attrib.php") sur la couche *[CLC00_FR_RGF](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* pour ne sélectionner que les vignes : **"CODE_00" = '221'** (en jaune ci-dessous).
 
-
-
 [![Couche CLC, vignes sélectionnées en jaune](illustrations/9_5_selection_vignes.jpg)](illustrations/9_5_selection_vignes.jpg "illustrations/9_5_selection_vignes.jpg")
-
 
 Il ne reste plus qu'à importer les entités sélectionnes, dans SpatiaLite ou PostGIS selon votre choix.
 
-
-
 ![icône du gestionnaire de bases de données](illustrations/6_4_dbmanager_icone.jpg)Dans QGIS, ouvrez la fenêtre du **gestionnaire de bases de données** : menu Base de données → DB Manager... ou bien clic sur l'icône correspondante.
 
-
 Sélectionnez votre base, SpatiaLite... :
-
-
 
 [![Base SpatiaLite sélectionnée dans DB Manager](illustrations/9_5_dbmanager_sl.jpg)](illustrations/9_5_dbmanager_sl.jpg "illustrations/9_5_dbmanager_sl.jpg")
 
 ...Ou bien PostGIS :
 
-
-
 [![Base PostGIS sélectionnée dans DB Manager](illustrations/9_5_dbmanager_psql.jpg)](illustrations/9_5_dbmanager_psql.jpg "illustrations/9_5_dbmanager_psql.jpg")
 
 Dans les 2 cas, **cliquez sur le petit triangle devant le nom de la base** pour être sûr d'y être bien connecté.
 
-
 Cliquez ensuite sur le bouton **Import de couche/fichier** en haut de la fenêtre du gestionnaire de bases de données :
-
-
 
 [![Import de données dans SpatiaLite](illustrations/9_5_import_spatialite.jpg)](illustrations/9_5_import_spatialite.jpg "illustrations/9_5_import_spatialite.jpg")
 [![Import de données dans PostGIS](illustrations/9_5_import_postgis.jpg)](illustrations/9_5_import_postgis.jpg "illustrations/9_5_import_postgis.jpg")
@@ -236,153 +158,97 @@ Import de données : à gauche dans SpatiaLite, à droite dans PostGIS.
 * SCR cible : le SCR original IGNF:LAMB93 n'est pas reconnu par SpatiaLite ou PostGIS : sélectionnez son équivalent **RGF93/Lambert93 EPSG 2154**
 * Vous pouvez également cocher la case **créer un index spatial**, ce qui accélérera certaines opérations spatiales (mais il peut être créé par la suite)
 
-
 ![icône actualiser du gestionnaire de bdd](illustrations/9_5_actualiser_bdd_icone.jpg)Cliquez sur **OK**, patientez... Il faut éventuellement actualiser la base pour que la nouvelle couche soit visible :
-
-
 
 [![couche importée dans SpatiaLite](illustrations/9_5_import_spatialite_res.jpg)](illustrations/9_5_import_spatialite_res.jpg "illustrations/9_5_import_spatialite_res.jpg")
 [![Couche importée dans PostGIS](illustrations/9_5_import_postgis_res.jpg)](illustrations/9_5_import_postgis_res.jpg "illustrations/9_5_import_postgis_res.jpg")
 
-
 Bravo ! Vous disposez maintenant d'une base de données avec une couche de données.
 
-
-
 Pour chaque couche PostGIS ou SpatiaLite, on peut accéder à partir du gestionnaire de bases de données à 3 onglet : info, table et aperçu.
-
-
 
 [![3 onglets info, table et aperçu dans le gestionnaire de bdd](illustrations/9_5_info_couche.jpg)](illustrations/9_5_info_couche.jpg "illustrations/9_5_info_couche.jpg")
 
 L'onglet **info** vous permet de voir le nombre d'entités (4215), le type de géométrie (multipolygone), le SCR (RGF93 Lambert93 EPSG 2154), la liste des champs...
 
-
 Les onglets **table** et **aperçu** permettent un aperçu des données attributaires et spatiales : cliquez sur chacun d'eux.
-
 
 Double-cliquez sur la couche dans la partie gauche du gestionnaire de bases de données pour l'ajouter à QGIS. Vous pouvez maintenant l'utiliser comme n'importe quelle couche shapefile ou GeoPackage.
 
-
-
 Nous allons pouvoir rentrer dans le vif du sujet !
-
 
 ### Lancer une requête simple
 
-
 A ce stade, si vous n'avez aucune notion de SQL, je vous conseille de d'abord suivre [cette partie](06_04_req_sql.php "06_04_req_sql.php") sur les requêtes SQL.
-
 
 Nous allons ici lancer une requête simple dans SpatiaLite ou PostGIS, en guise d'introduction.
 
-
-
 Sélectionnez votre base dans le gestionnaire de bases de données.
-
 
 ![icône 'Fenêtre SQL' du gestionnaire de BDD](illustrations/9_5_requete_icone.jpg)Cliquez ensuite sur l'icône **Fenêtre SQL** (ou menu Base de données → Fenêtre SQL) : un nouvel onglet s'ouvre.
 
-
-
 [![Fenêtre du gestionnaire de bdd avec l'onglet requête](illustrations/9_5_requete_fenetre.jpg)](illustrations/9_5_requete_fenetre.jpg "illustrations/9_5_requete_fenetre.jpg")
-
 
 Remarquez que cet onglet porte le nom de votre base : il ne sera pas possible d'y lancer une requête concernant une autre base (mais on peut très bien ouvrir plusieurs onglets de requête).
 
-
 L'onglet comporte 2 parties :
-
 
 1. en haut, vous pouvez taper une requête
 2. en bas, vous pourrez visualiser le résultat de cette requête.
 
-
 Pour tester cet outil, nous allons sélectionner les polygones ayant une surface inférieure à 25 hectares.
-
-
 
 Tapez la requête suivante (pour une base SpatiaLite ou PostGIS) :
 
-
 SELECT * FROM clc00_vignes WHERE area_ha < 25
-
 
 Puis cliquez sur le bouton **Exécuter** : les 10 lignes correspondant à des polygones de surface < 25 hectares s'affichent.
 
-
-
 [![Requête exemple et son résultat](illustrations/9_5_requete_exemple.jpg)](illustrations/9_5_requete_exemple.jpg "illustrations/9_5_requete_exemple.jpg")
-
 
 Les différents mots clés (select, from, where...) peuvent être écrits indifféremment en minuscules ou majuscules. De même, la requête peut être écrite en une seule ligne ou bien avec des retours à la ligne.
 
-
 Si l'on détaille cette requête ligne par ligne :
-
 
 SELECT *
 
-
 signifie que nous allons sélectionner (**select**) toutes (la mention *****) les colonnes de la table attributaire, ainsi que la géométrie, qui est considérée comme une colonne nommée geom, comme vous pouvez le vérifier dans l'onglet **Info**.
-
 
 FROM clc00_vignes
 
-
 signifie que nous allons sélectionner les colonnes de la couche *clc00_vignes*.
-
 
 WHERE area_ha < 25
 
-
 applique un critère à la requête : seules seront sélectionnées les lignes répondant à ce critère, c'est-à-dire dont la valeur pour le champ area_ha est inférieure à 25.
-
 
 Ici, la requête ne crée pas de nouvelles couches mais renvoie les lignes sélectionnées. Comment faire pour créer une nouvelle couche à partir de cette sélection ?
 
-
-
 Dans PostGIS, il suffira d'ajouter devant cette requête **CREATE TABLE nouvelle_table AS** : la requête complète sera donc
-
 
 CREATE TABLE tutoqgis.inf25ha AS
 SELECT * FROM clc00_vignes
 WHERE area_ha < 25
 
-
 pour créer une nouvelle couche nommée inf25ha dans le schéma tutoqgis par exemple.
-
 
 Cliquez sur **Exécuter** : aucun résultat n'est renvoyé mais une nouvelle couche est ajoutée à la base, visible après l'avoir actualisée.
 
-
-
 [![Requête de création de table](illustrations/9_5_requete_exemple2.jpg)](illustrations/9_5_requete_exemple2.jpg "illustrations/9_5_requete_exemple2.jpg")
-
 
 Pour SpatiaLite, les choses sont se compliquent un petit peu : la même requête renvoie bien une table avec les mêmes colonnes, mais la colonne **geom** n'est pas reconnue comme colonne de géométrie. Il s'agit d'une simple table sans composante géographique.
 
-
 Vous pouvez d'ailleurs le voir dans l'illustration ci-dessus : l'icône de inf25ha dans la base SpatiaLite est celle d'une table, alors que c'est un polygone dans la base PostGIS.
-
-
 
 Il faudra donc lancer une deuxième requête pour que la colonne **geom** soit bien reconnue comme colonne de géométrie dans SpatiaLite :
 
-
 SELECT RecoverGeometryColumn('inf25ha', 'geom', 2154, 'MULTIPOLYGON', 'XY');
-
-
 
 [![Requête RecevoerGeometryColumn](illustrations/9_5_recovergeom.jpg)](illustrations/9_5_recovergeom.jpg "illustrations/9_5_recovergeom.jpg")
 
 Après avoir cliqué sur le bouton **Exécuter**, cette requête doit renvoyer la valeur **1** indiquant que tout s'est bien passé. Après avoir cliqué sur le bouton **Actualiser** en haut à gauche, inf25ha a une icône de polygone et est maintenant une couche géographique.
 
-
-
 Pour expliquer cette requête : [RecoverGeometryColumn](http://www.gaia-gis.it/gaia-sins/spatialite-sql-5.0.0.html "http://www.gaia-gis.it/gaia-sins/spatialite-sql-5.0.0.html") est la fonction permettant de transformer une colonne ordinaire en colonne de géométrie (sous réserve bien sûr que son contenu corresponde bien à des géométries). Cette fonction prend plusieurs arguments :
-
 
 * **inf25ha** est le nom de la couche
 * **geom** est le nom de la colonne de géométrie
@@ -390,83 +256,57 @@ Pour expliquer cette requête : [RecoverGeometryColumn](http://www.gaia-gis.it/
 * **'MULTIPOLYGON'** est le type de géométries de la couche (ici, c'est le même type que la couche clc00_vignes qui a servi a créer inf25ha)
 * **'XY'** correspond à la dimension de la couche
 
-
 Une autre différence entre PostGIS et SpatiaLite : dans PostGIS, il est possible de lancer plusieurs requêtes à la suite les unes des autres, pourvu que chaque requête se termine par un point-virgule. Dans SpatiaLite, il faut lancer les requêtes une à une, en cliquant sur le bouton Exécuter entre chaque.
-
 
 Nous allons maintenant utiliser des requêtes plus complexes pour créer une grille !
 
-
 ### Création d'une grille
-
 
 Notre première étape consiste à créer une grille ayant la même étendue que notre couche **clc00_vignes**, avec une maille de 50km. C'est l'équivalent de [cette étape](09_04_maillage.php#IX42 "09_04_maillage.php#IX42") réalisée au chapitre précédent.
 
-
 Il existe dans SpatiaLite une fonction spécifique pour créer une grille ; la fonction équivalente n'est accessible dans PostGIS qu'à partir de la version 3.1. A moins de disposer de cette version, il faudra donc utiliser une fonction « fait maison ».
-
 
 #### Créer une grille avec SpatiaLite
 
-
 Dans SpatiaLite, nous allons pouvoir utiliser la fonction ST_SquareGrid. 4 étapes seront nécessaires :
-
 
 1. Création d'une table vide
 2. Ajout d'une colonne de géométrie à cette table
 3. Mise à jour de cette colonne pour créer une grille avec une seule entité multiparties
 4. Séparation de l'entité multiparties pour que 1 case = 1 polygone
 
-
-
 Pour créer une table vide avec une clé primaire id, la requête est la suivante :
-
 
 CREATE TABLE grid00 (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT);
 
-
 Après avoir exécuté cette requête et actualisé la base, la table grid00 est visible. Elle ne comporte aucune ligne et une seule colonne **id**.
-
 
 Il faut ensuite lui ajouter une colonne de géométrie de type multipolygone :
 
-
 SELECT AddGeometryColumn('grid00','geom',2154,'MULTIPOLYGON','XY');
-
 
 La table est maintenant une couche de polygones avec une colonne de géométrie **geom**. Elle ne contient encore aucune entité, ce que vous pouvez vérifier dans les onglets table et aperçu.
 
-
 Il ne reste plus qu'à mettre à jour la géométrie avec la fonction [ST_SquareGrid](http://www.gaia-gis.it/gaia-sins/spatialite-sql-5.0.0.html "http://www.gaia-gis.it/gaia-sins/spatialite-sql-5.0.0.html") :
-
 
 INSERT INTO grid00 (geom) SELECT ST_SquareGrid(Extent(v.geom), 50000) AS geom FROM clc00_vignes AS v
 
-
 Cette dernière requête créer une grille avec la même étendue que clc00_vignes, et une maille de 50 km. La fonction **ST_SquareGrid** prend 2 arguments :
-
 
 * une géométrie correspondant à l'étendue de la grille, ici l'étendue de clc00_vignes récupérée au moyen de la fonction **Extent**
 * la taille de maille dans le SCR de la couche, ici 50 000 mètres
 
-
 Notez également que pour simplifier la requête, la couche clc00_vignes est appelée v : **clc00_vignes AS v**. On peut donc y faire référence dans le reste de la requête par la lettre v sans taper son nom complet.
 
-
 Vous pouvez ajouter cette couche à QGIS en double-cliquant sur son nom :
-
-
 
 [![Grille superposée aux vignes](illustrations/9_5_grille_res.jpg)](illustrations/9_5_grille_res.jpg "illustrations/9_5_grille_res.jpg")
 
 Cependant, cette couche ne contient qu'une seule entité multi-partie : vous ne pouvez pas sélectionner une seule case. Une dernière requête est donc nécessaire :
 
-
 SELECT ElementaryGeometries('grid00', 'geom', 'grid00_sp','gid','fid') as geom FROM grid00
 
-
 Ici, nous utilisons la fonction **ElementaryGeometries** pour passer d'une couche de multipolygones à une couche de polygone. Cette fonction utilise les arguments suivants :
-
 
 * le nom de la couche multipartie, ici **grid00**
 * le nom de la colonne de géométrie de la couche en entrée, ici **geom**
@@ -474,32 +314,21 @@ Ici, nous utilisons la fonction **ElementaryGeometries** pour passer d'une couch
 * l'identifiant de la couche en entrée, ici **gid**
 * l'identifiant de la couche en sortie (à créer), ici **fid**
 
-
 La couche *grid00_sp* comporte maintenant autant d'entités que de cases et est de type POLYGON. Il est possible de sélectionner une seule case.
-
-
 
 #### Créer une grille avec PostGIS
 
-
 Malheureusement, la fonction ST_SquareGrid permettant la génération d'une grille avec PostGIS n'est accessible qu'à partir de la version 3.1. A moins de disposer de cette version, il faudra donc utiliser notre propre fonction !
-
 
 Une [fonction](https://fr.wikipedia.org/wiki/Routine_(informatique) "https://fr.wikipedia.org/wiki/Routine_(informatique)") est un bout de code pouvant être « appelé ». C'est en quelque sorte un raccourci qui permet d'éviter de taper une série d'instructions, en tapant seulement le nom de cette série d'instructions.
 
-
 Les fonctions peuvent prendre des arguments en entrée : par exemple, une couche, une taille de maille... Et peuvent renvoyer un résultat un sortie, par exemple une grille.
-
 
 Nous allons ici utiliser [cette fonction](https://gis.stackexchange.com/a/23541/175131 "https://gis.stackexchange.com/a/23541/175131") créée par Alexander Palamarchuk pour générer une grille.
 
-
-
 Dans la fenêtre du gestionnaire de bases de données, après avoir sélectionné la base PostGIS, ouvrez un nouvel onglet de requête (menu Base de données → Fenêtre SQL).
 
-
 Copiez et coller le code suivant dans cet onglet, issu de [ce post sur StackExchange](https://gis.stackexchange.com/a/23541/175131 "https://gis.stackexchange.com/a/23541/175131") (la seule modification est celle du code EPSG du SCR : 2154 au lieu de 28408) :
-
 
 CREATE OR REPLACE FUNCTION public.makegrid_2d (
  bound_polygon public.geometry,
@@ -551,24 +380,16 @@ END;
 $body$
 LANGUAGE 'plpgsql';
 
-
 Cliquez sur **Exécuter** : aucun résultat n'est renvoyé.
-
-
 
 La fonction **makegrid_2d** est maintenant accessible dans PostGIS : vous n'aurez plus besoin de retaper ce code.
 
-
 Il ne reste plus qu'à appeler cette fonction avec en entrée :
-
 
 * l'étendue de la grille, c'est-à-dire l'étendue de *clc00_vignes*
 * la taille de maille, soit 50 000 mètres
 
-
-
 Lancez la requête suivante :
-
 
 CREATE TABLE tutoqgis.grid00 as
 SELECT row_number() over () as gid, geom FROM
@@ -577,88 +398,57 @@ SELECT row_number() over () as gid, geom FROM
 50000)
 )).geom AS geom) AS q_grid;
 
-
-
 Quelques explications, cette fois-ci nous prendrons cette requête non plus ligne par ligne, mais fonction par fonction...
-
 
 Une petite astuce : en cliquant sur une parenthèse ouvrante ou fermante dans l'onglet de requête du gestionnaire de bases de données, cette parenthèse et son alter ego sont surlignées en vert, ce qui permet de mieux comprendre l'emboîtement des fonctions.
 
-
 create table tutoqgis.grid00 as
-
 
 Cette première ligne veut simplement dire que cette requête va créer une nouvelle table nommée **grid00** dans le schéma **tutoqgis**.
 
-
 SELECT row_number() over () as gid, geom FROM (SELECT...) AS q_grid
-
 
 Cette nouvelle table contiendra 2 colonnes : une colonne **gid** d'identifiant unique, créée avec la fonction [row_number()](https://www.postgresql.org/docs/current/functions-window.html "https://www.postgresql.org/docs/current/functions-window.html"), et une colonne de géométrie **geom**. Comme la table est créée à partir d'un deuxième **SELECT**, il faut donner un nom (alias) à cette sous-requête, ici **q_grid**.
 
-
 Vous pouvez essayer de relancer la requête en omettant la partie **AS q_grid**, vous obtiendrez un message d'erreur vous indiquant que la sous-requête doit avoir un alias : ERROR: subquery in FROM must have an alias.
-
 
 (SELECT (ST_Dump(...)).geom AS geom
 
-
 La sous-requête utilise la fonction [ST_Dump](https://postgis.net/docs/ST_Dump.html "https://postgis.net/docs/ST_Dump.html"), qui permet de créer des entités à une seule partie. Pour récupérer une géométrie en retour avec cette fonction, on a ajouté **.geom**, et pour nommer cette géométrie geom **AS geom**.
-
 
 makegrid_2d(..., ...)
 
-
 La fonction **ST_Dump** prend un seul paramètre en entrée correspondant à une géométrie. Ici, cette géométrie sera celle renvoyée en sortie par la fonction **st_makegrid** créée précédemment, qui prend elle en entrée 2 arguments, séparés par une virgule.
-
 
 SELECT ST_SetSRID(ST_Extent(geom), 2154) FROM tutoqgis.clc00_vignes
 
-
 Le premier argument de la fonction **makegrid_2d** correspond à une étendue. On utilise pour la créer la fonction [ST_Extent](https://postgis.net/docs/ST_Extent.html "https://postgis.net/docs/ST_Extent.html") sur la couche **clc00_vignes**. Il faut également attribuer un système de coordonnées (SRID dans la jargon PostGIS) à cette étendue, ce qui est fait avec la fonction [St_SetSRID](https://postgis.net/docs/ST_SetSRID.html "https://postgis.net/docs/ST_SetSRID.html"), qui utilise 2 paramètres : le résultat de **ST_Extent**, et le code EPSG **2154** (RGF93 Lambert 93).
-
 
 Si vous testez la requête sans utiliser la fonction ST_SetSRID, en remplaçant la partie ci-dessus par « select st_extent(geom) from tutoqgis.clc00_vignes », vous obtiendrez un message d'erreur vous indiquant que la géométrie en entrée n'a pas de système de coordonnées : ERROR: ST_Transform: Input geometry has unknown (0) SRID
 
-
 50000
-
 
 **50000** est le deuxième paramètre utilisé par la fonction **makegrid_2d**, qui correspond à la longueur du côté d'une maille dans le SCR utilisé (ici Lambert 93, donc en mètres).
 
-
-
 Actualisez la base : la couche grid00 est visible, on peut l'ajouter à QGIS, mais son type de géométrie n'est pas reconnu. Pour cela, une dernière requête :
-
 
 Select populate_geometry_columns()
 
-
-
 [![Fenêtre du gestionnaire de bdd avec aperçu de la grille PostGIS](illustrations/9_5_grille_postgis_res.jpg)](illustrations/9_5_grille_postgis_res.jpg "illustrations/9_5_grille_postgis_res.jpg")
-
 
 A ce stade, si vous avez suivi le [chapitre précédent](09_04_maillage.php#IX42 "09_04_maillage.php#IX42") et créé une grille avec l'outil **Créer une grille** de QGIS, l'opération paraît bien plus compliquée en SQL. Avec un peu de chance la partie suivante vous donnera l'impression inverse !
 
-
 ### Union et agrégation
-
 
 Nous allons maintenant donner à chaque case de cette grille une valeur correspondant à sa surface en vignes, à partir de la couche *clc00_vignes*.
 
-
 Cette opération regroupe les 3 parties du chapitre précédent : [union](09_04_maillage.php#IX43 "09_04_maillage.php#IX43"), [recalcul de la surface](09_04_maillage.php#IX44 "09_04_maillage.php#IX44") et [agrégation des données par maille](09_04_maillage.php#IX45 "09_04_maillage.php#IX45") (je vous avais bien dit que le SQL avait des avantages).
-
 
 Comme d'habitude, à vous de choisir votre logiciel préféré pour cette opération, qui nécessite donc 2 couches : une grille, et une couche de polygones.
 
-
-
 La requête est la même pour SpatiaLite et PostGIS, il faut juste ajouter le nom du schéma **tutoqgis** pour PostGIS, et exécuter la requête sur **grid00_sp** et non **grid00** pour SpatiaLite.
 
-
 SpatiaLite :
-
 
 CREATE TABLE grid00_surf AS
 SELECT g.gid, g.geom, sum(ST_Area(ST_Intersection(v.geom, g.geom)))/10000 AS surf
@@ -667,9 +457,7 @@ WHERE ST_Intersects(g.geom, v.geom)
 GROUP BY g.gid, g.geom
 ORDER BY g.gid
 
-
 PostGIS :
-
 
 CREATE TABLE tutoqgis.grid00_surf AS
 SELECT g.gid, g.geom, sum(ST_Area(ST_Intersection(v.geom, g.geom)))/10000 AS surf
@@ -678,139 +466,92 @@ WHERE ST_Intersects(g.geom, v.geom)
 GROUP BY g.gid, g.geom
 ORDER BY g.gid
 
-
 Exécutez cette requête dans SpatiaLite ou PostGIS.
-
-
 
 Comment fonctionne cette requête ? Prenons ses lignes une à une, mais dans le désordre (ici il s'agit de la requête PostGIS, mais les explications sont les mêmes pour SpatiaLite) :
 
-
 CREATE TABLE tutoqgis.grid00_surf AS
-
 
 Pas de souci ici, il s'agit de créer une table nommée **grid00_surf** dans le schéma **tutoqgis**. On passe 2 lignes plus loin !
 
-
 FROM tutoqgis.grid00 AS g, tutoqgis.clc00_vignes AS v
-
 
 Comme prévu, cette requête va utiliser les 2 couches **grid00** et **clc00_vignes**, toutes 2 dans le schéma **tutoqgis**. Dans le reste de la requête, on se référera à ces tables par leur alias : **g** pour la grille, **v** pour les vignes. On remonte à la ligne du dessus...
 
-
 Si on veut relancer cette requête sur d'autres couches, grâce à l'alias il n'y aura besoin de modifier les noms des couches qu'à un seul endroit !
-
 
 SELECT g.gid, g.geom, sum(ST_Area(ST_Intersection(v.geom, g.geom)))/10000 AS surf
 
-
 La couche créée va comporter 3 colonnes :
-
 
 * La colonne d'identifiant unique **gid**
 * Une colonne de géométrie, identique à celle de la couche **grid00**
 * Une colonne nommée **surf**, correspondant à la somme (fonction [SUM](https://sql.sh/fonctions/agregation/sum "https://sql.sh/fonctions/agregation/sum")) des surfaces du résultat de l'intersection entre la grille et les vignes (fonction [ST_Intersection](http://www.postgis.fr/chrome/site/docs/workshop-foss4g/doc/geometry_returning.html#st-intersection "http://www.postgis.fr/chrome/site/docs/workshop-foss4g/doc/geometry_returning.html#st-intersection")). On divise cette somme par 10 000 pour obtenir non plus des surfaces en mètres mais en hectares.
 
-
 On descend 2 lignes plus bas...
-
 
 GROUP BY g.gid, g.geom
 
-
 La clause [GROUP BY](https://sql.sh/cours/group-by "https://sql.sh/cours/group-by") permet de regrouper toutes les entités ayant la même valeur de géométrie et d'identifant. Elle implique d'utiliser une fonction d'agrégation pour les colonnes autres que **geom** et **gid**. Ici, c'est la fonction d'agrégation **SUM** qui est utilisée dans la deuxième ligne de la requête pour créer la colonne **surf**.
-
 
 La requête pourrait être lancée telle quelle. Pour qu'elle soit moins longue à s'exécuter, on a rajouté la ligne
 
-
 WHERE ST_Intersects(g.geom, v.geom)
-
 
 qui permet de ne prendre en compte que les cases de la grille qui sont superposées avec des vignes. Avec ce critère, la table créée ne contient donc que ces cases. Vous pouvez tester en supprimant cette ligne, le résultat sera un peu plus long à créer.
 
-
 ORDER BY g.gid
-
 
 Enfin, cette dernière ligne, optionnelle, permet de choisir l'ordre des lignes dans la table, ici un ordre croissant sur le champ gid.
 
-
 Si vous utilisez SpatiaLite, il reste une requête pour que la colonne géométrie soit reconnue en tant que telle.
-
-
 
 Exécutez cette requête sur votre base SpatiaLite :
 
-
 SELECT RecoverGeometryColumn('grid00_surf', 'geom', 2154, 'POLYGON', 'XY');
-
 
 Elle doit renvoyer la valeur **1**.
 
-
-
 On peut maintenant visualiser le résultat, que vous ayiez utilisé SpatiaLite ou PostGIS.
-
-
 
 Ajoutez la couche créée à QGIS. Vous pouvez par exemple lui attribuer un style gradué pour visualiser la présence de vignes :
 
-
-
 [![Surface en vignes par maille de 50km, discrétisation Jenks 7 classes](illustrations/9_5_vignes_jenks7.jpg)](illustrations/9_5_vignes_jenks7.jpg "illustrations/9_5_vignes_jenks7.jpg")
-
 
 Avec 5 ou 6 lignes de SQL, vous avez accompli l'équivalent de 3 outils QGIS et de beaucoup de clics !
 
-
 Et surtout, il sera très facile de relancer toute cette opération sur d'autres données, comme nous allons le faire ci-dessous.
-
 
 ### Évolution temporelle : soustraction de 2 maillages
 
-
 #### Relancer l'opération sur les données Corine Land Cover 2012
-
 
 Nous avons jusqu'ici travaillé sur les données Corine Land Cover 2000. Nous allons maintenant utiliser les données équivalentes pour l'année 2012, ce qui nous permettra de visualiser l'évolution entre ces 2 années.
 
-
 Nous allons donc relancer l'opération précédente (union et agrégation) sur la couche CLC 2012.
-
-
 
 Ajoutez à QGIS la couche [CLC12_FR_RGF](http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC12_FR_RGF_SHP.zip "http://www.donnees.statistiques.developpement-durable.gouv.fr/donneesCLC/CLC/millesime/CLC12_FR_RGF_SHP.zip") ou *[CLC12_221_FR_RGF](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")*. Sélectionnez éventuellement les vignes ("CODE_12" = '221') et [importez-les](09_05_maillage_sql.php#IX52 "09_05_maillage_sql.php#IX52") dans votre base SpatiaLite ou PostGIS sous le nom **clc12_vignes.**
 
-
 Il faut ensuite relancer les mêmes requêtes que précédemment, en remplaçant les noms des couches :
-
 
 * **clc00_vignes** par **clc12_vignes**
 * **grid00** par **grid12**
 * **grid00_sp** par **grid12_sp** (pour SpatiaLite)
 * **grid00_surf** par **grid12_surf**
 
-
 Attention, pour que les 2 grilles 2000 et 2012 se superposent exactement, nous allons créer la grille 2012 avec la même étendue que la couche clc00_vignes et non clc12_vignes (ce qui est possible car il n'existe pas de nouvelles vignes en 2012 hors emprise de la couche 2000).
-
 
 Pour SpatiaLite :
 
-
 CREATE TABLE grid12 (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT);
 
-
 SELECT AddGeometryColumn('grid12','geom',2154,'MULTIPOLYGON','XY');
-
 
 INSERT INTO grid12 (geom) SELECT ST_SquareGrid(Extent(v.geom), 50000) AS geom
 FROM clc00_vignes AS v;
 
-
 SELECT ElementaryGeometries('grid12', 'geom', 'grid12_sp','gid','fid') as geom
 FROM grid12;
-
 
 CREATE TABLE grid12_surf AS
 SELECT g.gid, g.geom, sum(ST_Area(ST_Intersection(v.geom, g.geom)))/10000 AS surf
@@ -819,12 +560,9 @@ WHERE ST_Intersects(g.geom, v.geom)
 GROUP BY g.gid, g.geom
 ORDER BY g.gid;
 
-
 SELECT RecoverGeometryColumn('grid12_surf', 'geom', 2154, 'POLYGON', 'XY');
 
-
 Pour PostGIS :
-
 
 CREATE TABLE tutoqgis.grid12 as
 SELECT row_number() over () as gid, geom FROM
@@ -833,9 +571,7 @@ SELECT row_number() over () as gid, geom FROM
 50000)
 )).geom AS geom) AS q_grid;
 
-
 Select populate_geometry_columns();
-
 
 CREATE TABLE tutoqgis.grid12_surf AS
 SELECT g.gid, g.geom, sum(ST_Area(ST_Intersection(v.geom, g.geom)))/10000 AS surf
@@ -844,80 +580,54 @@ WHERE ST_Intersects(g.geom, v.geom)
 GROUP BY g.gid, g.geom
 ORDER BY g.gid;
 
-
-
 Rapide, non ? Quand vous travaillez avec des requêtes SQL, une pratique peut être de copier les requêtes dans un fichier texte. Ainsi vous en gardez la mémoire, et si vous avez besoin de les relancer sur d'autres données, il vous suffira de faire un rechercher-remplacer sur les noms des couches, puis de recopier ces requêtes dans le gestionnaire de bases de données QGIS.
-
 
 Il est possible en SQL d'ajouter des [commentaires](https://sql.sh/cours/commentaires "https://sql.sh/cours/commentaires"), non pris en compte : la ligne doit alors être précédée par 2 tirets. Ceci vous permet d'expliquer vos requêtes, ce qui est toujours utile quand on reprend un travail quelques semaines/mois/années plus tard, ou pour vos collègues.
 
-
 #### Soustraire les 2 maillages 2012 et 2000
 
-
 En guise de dernière application pour ce chapitre, nous allons voir 2 manières de visualiser l'évolution de la surface en vignes entre 2000 et 2012 :
-
 
 * Avec des requêtes SQL
 * En mode raster
 
-
 On pourrait aussi travailler en mode raster avec des requêtes SQL ! Mais ce chapitre est déjà bien rempli.
-
 
 L'idée est donc de soustraire pour chaque case de grille les données 2000 aux données 2012, afin de visualiser une évolution, négative ou positive.
 
-
 Si on utilise le langage SQL, on va pouvoir faire une [jointure attributaire](08_01_jointure_attrib.php "08_01_jointure_attrib.php") sur le champ gid entre les 2 couches *grid00_surf* et *gri12_surf*.
-
 
 La requête sera la même pour SpatiaLite et PostGIS, il faut simplement ajouter le nom du schéma **tutoqgis** devant le nom des tables pour PostGIS, et mettre à jour la colonne de géométrie pour SpatiaLite.
 
-
-
 SpatiaLite :
-
 
 CREATE TABLE evol_00_12 AS
 SELECT g1.gid, (g2.surf - g1.surf) AS diff_surf, g1.geom
 FROM grid00_surf AS g1, grid12_surf AS g2
 WHERE g1.gid = g2.gid;
 
-
 SELECT RecoverGeometryColumn('evol_00_12', 'geom', 2154, 'POLYGON', 'XY');
 
-
 PostGIS :
-
 
 CREATE TABLE tutoqgis.evol_00_12 AS
 SELECT g1.gid, (g2.surf - g1.surf) AS diff_surf, g1.geom
 FROM tutoqgis.grid00_surf AS g1, tutoqgis.grid12_surf AS g2
 WHERE g1.gid = g2.gid;
 
-
-
 Cette requête crée une couche **evol_00_12** avec 3 colonnes :
-
 
 * **gid**, ici en récupérant le champ gid de la couche grid00 (mais on aurait très bien pu remplacer g1.gid par g2.gid, le résultat serait le même)
 * une colonne **diff_surf** correspondant à la différence de surface en vignes entre 2012 et 2000
 * la géométrie **geom**, idem on aurait pu remplacer g1.geom par g2.geom
 
-
 La ligne
-
 
 WHERE g1.gid = g2.gid
 
-
 est celle qui fait la jointure entre les 2 couches, sur le champ **gid**.
 
-
-
 Pour visualiser cette évolution, ajoutez la couche à QGIS, avec un style gradué :
-
-
 
 [![Paramétrage du style gradué avec une gamme de couleur divergente et une classification symmétrique](illustrations/9_5_evol_gradue.jpg)](illustrations/9_5_evol_gradue.jpg "illustrations/9_5_evol_gradue.jpg")
 
@@ -928,30 +638,19 @@ Pour visualiser cette évolution, ajoutez la couche à QGIS, avec un style gradu
 * Cliquez sur le bouton **Classer**
 * Cochez la case **Classification symétrique**, pour représenter avec la même intensité de couleur des variations positives et négatives de même ampleur, avec comme valeur du milieu **0**
 
-
-
 [![Exemple de représentation de l'évolution de la surface en vigne, gamme de couleur divergente, intervalles égaux, 5 classes](illustrations/9_5_evol_res.jpg)](illustrations/9_5_evol_res.jpg "illustrations/9_5_evol_res.jpg")
 
 Une taille de maille différente donnerait un résultat différent !
 
-
-
 Une autre manière de faire pour cette opération est de convertir les 2 maillages en rasters, et de soustraire ces rasters l'un à l'autre.
-
-
 
 Ouvrez un nouveau projet QGIS, ajoutez-y vos 2 couches SpatiaLite ou PostGIS *grid00_surf* et *grid12_surf*.
 
-
 Dans la boîte à outils, cherchez l'outil GDAL **Rasteriser (vecteur vers raster)** :
-
-
 
 [![Recherche par filtre de l'outil rasteriser dans la toolbox](illustrations/9_5_rasteriser_emplacement.jpg)](illustrations/9_5_rasteriser_emplacement.jpg "illustrations/9_5_rasteriser_emplacement.jpg")
 
 Double-cliquez sur cet outil :
-
-
 
 [![Paramétrage de l'outil rasteriser pour la couche grid00_surf](illustrations/9_5_rasteriser_fenetre.jpg)](illustrations/9_5_rasteriser_fenetre.jpg "illustrations/9_5_rasteriser_fenetre.jpg")
 
@@ -962,25 +661,17 @@ Double-cliquez sur cet outil :
 * Emprise du résultat : cliquez sur les **...** à droite et sélectionnez la couche **grid00_surf**, pour que le futur raster ait la même étendue que le maillage d'origine
 * Vous pouvez choisir de créer un fichier temporaire ou bien d'enregistrer le résultat sur votre ordinateur.
 
-
 Lancez la rastérisation... La couche résultat est automatiquement ajoutée à QGIS, et se superpose avec la couche grid00_surf :
-
-
 
 [![Résultat de la rastérisation, superposé à la couche d'origine](illustrations/9_5_rasteriser_res.jpg)](illustrations/9_5_rasteriser_res.jpg "illustrations/9_5_rasteriser_res.jpg")
 
 Si vous avez créé une couche temporaire, renommez-la par exemple **rast00** (en la sélectionnant puis en appuyant sur la touche F2) afin de ne pas la confondre avec le deuxième raster sur 2012 par la suite.
 
-
 Effectuez la même opération sur la couche **grid12_surf** pour créer un deuxième raster. Si c'est une couche temporaire, renommez-la par exemple **rast12**.
-
 
 Il ne reste plus qu'à soustraire ces 2 rasters au moyen de la calculatrice raster.
 
-
-
 [![Emplacement de l'outil Raster calculator dans la toolbox](illustrations/9_5_rastercalc_emplacement.jpg)](illustrations/9_5_rastercalc_emplacement.jpg "illustrations/9_5_rastercalc_emplacement.jpg")
-
 
 [![Paramétrage de l'outil Raster calculator](illustrations/9_5_rastercalc_fenetre.jpg)](illustrations/9_5_rastercalc_fenetre.jpg "illustrations/9_5_rastercalc_fenetre.jpg")
 
@@ -988,16 +679,11 @@ Il ne reste plus qu'à soustraire ces 2 rasters au moyen de la calculatrice rast
 * Reference layer : cliquez sur les **...** tout à droite, et sélectionnez l'une ou l'autre couche **rast00** ou **rast12** : la couche créée aura la même emprise, résolution et SCR que cette couche de référence
 * Output : vous pouvez soit créer une couche temporaire, soit enregistrer cette couche sur votre ordinateur
 
-
 Par défaut, le résultat s'affiche en niveau de gris :
-
-
 
 [![Résultat de la différence des 2 rasters : style par défaut bande grise unique](illustrations/9_5_evol_raster1.jpg)](illustrations/9_5_evol_raster1.jpg "illustrations/9_5_evol_raster1.jpg")
 
 Pour une représentation similaire à celle obtenue plus haut, il faut paramétrer le style de ce raster (cliquez sur l'image pour la voir en plus grand) :
-
-
 
 [![Paramétrage du style pour obtenir une discrétisation en 5 classes avec gamme de couleur divergente](illustrations/9_5_evolraster_discretisation.jpg)](illustrations/9_5_evolraster_discretisation.jpg "illustrations/9_5_evolraster_discretisation.jpg")
 
@@ -1007,21 +693,13 @@ Pour une représentation similaire à celle obtenue plus haut, il faut paramétr
 * Cliquez ensuite sur **Classer** pour créer 5 classes
 * Valeurs de classes : ici, pas de possibilité de spécifier une discrétisation symétrique autour de 0. Le plus simple est donc de recopier les limites de classes obtenues plus haut pour la couche vecteur. Attention, il s'agit des bornes supérieures des classes !
 
-
 Au final, le résultat est identique à celui obtenu en mode vecteur :
-
-
 
 [![Résultat de la discrétisation en 5 classes, du rose au vert](illustrations/9_5_evolraster_res.jpg)](illustrations/9_5_evolraster_res.jpg "illustrations/9_5_evolraster_res.jpg")
 
-
 Bravo, vous êtes arrivés au bout de ce chapitre ! Vous pouvez vous reposer avec le suivant sur les modes de représentation et la mise en page de cartes.
-
-
-
 
 [chapitre précédent](09_04_maillage.php "09_04_maillage.php")
 [partie X : représentation et mise en page](10_00_carto.php "10_00_carto.php")
-
 
 [haut de page](#wrap "#wrap")

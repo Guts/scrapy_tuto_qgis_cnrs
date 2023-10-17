@@ -1,37 +1,28 @@
 
 ## IX.1 Analyse spatiale : quelques exemples d'opérations sur des données vecteur
 
-
 * [Découper des données par d'autres données](#IX11 "#IX11")
-	+ [Quel est le principe ?](#IX11a "#IX11a")
-	+ [Découpage, mode d'emploi](#IX11b "#IX11b")
-	+ [Sans oublier de penser aux systèmes de coordonnées...](#IX11c "#IX11c")
+    * [Quel est le principe ?](#IX11a "#IX11a")
+    * [Découpage, mode d'emploi](#IX11b "#IX11b")
+    * [Sans oublier de penser aux systèmes de coordonnées...](#IX11c "#IX11c")
 * [Création d'une zone tampon autour d'un cours d'eau](#IX12 "#IX12")
-	+ [Qu'est-ce qu'une zone tampon ?](#IX12a "#IX12a")
-	+ [Sélection d'un cours d'eau](#IX12b "#IX12b")
-	+ [Création d'une zone tampon autour de la sélection](#IX12c "#IX12c")
-	+ [Pour aller plus loin : détail des autres paramètres](#IX12d "#IX12d")
+    * [Qu'est-ce qu'une zone tampon ?](#IX12a "#IX12a")
+    * [Sélection d'un cours d'eau](#IX12b "#IX12b")
+    * [Création d'une zone tampon autour de la sélection](#IX12c "#IX12c")
+    * [Pour aller plus loin : détail des autres paramètres](#IX12d "#IX12d")
 * [Données communes entre deux couches : intersection](#IX13 "#IX13")
-	+ [Qu'est-ce qu'une intersection ?](#IX13a "#IX13a")
-	+ [Intersection entre communes et zone tampon](#IX13b "#IX13b")
-	+ [Si on voulait aller plus loin...](#IX13c "#IX13c")
+    * [Qu'est-ce qu'une intersection ?](#IX13a "#IX13a")
+    * [Intersection entre communes et zone tampon](#IX13b "#IX13b")
+    * [Si on voulait aller plus loin...](#IX13c "#IX13c")
 * [Relancer rapidement un outil à l'aide de l'historique](#IX14 "#IX14")
-
-
-
 
 Nous aborderons ici quelques traitements possibles sur des données vecteur. Il en existe bien sûr beaucoup d'autres !
 
-
 ### Découper des données par d'autres données
-
 
 #### Quel est le principe ?
 
-
 Le but sera ici, à partir d'une couche de cours d'eau de la région Pays de la Loire et d'une couche des départements de France métropolitaine, de **découper les cours d'eau pour ne garder que ceux dans notre zone d'étude**, en l'occurrence le département de la Loire-Atlantique (44).
-
-
 
 [![Couches de départ : cours d'eau et départements](illustrations/9_1_decoupage_principe_1.jpg)](illustrations/9_1_decoupage_principe_1.jpg "illustrations/9_1_decoupage_principe_1.jpg")
 [![Couche résultat : cours d'eau du département de la Loire-Atlantique](illustrations/9_1_decoupage_principe_2.jpg)](illustrations/9_1_decoupage_principe_2.jpg "illustrations/9_1_decoupage_principe_2.jpg")
@@ -39,28 +30,19 @@ A gauche, les 2 couches de départ : cours d'eau des Pays de la Loire et départ
 
 Une telle opération est utile pour avoir des données moins lourdes, ce qui diminue les temps de traitement. Par ailleurs, votre travail sera plus clair si vous utilisez des données adaptées à votre zone d'étude.
 
-
 #### Découpage, mode d'emploi
-
-
 
 Ouvrez un nouveau projet QGIS. Ajoutez les couches *[DEPARTEMENT](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* et *[gis_osm_waterways_free_1](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")*.
 
-
 Le but sera donc de découper les cours d'eau par le département 44, pour ne garder que les cours d'eau à l'intérieur de ce département. Cette opération crée une nouvelle couche.
 
-
 ![menu projet, sauvegarder sous...](illustrations/1_1_selection_icone.jpg)Tout d'abord, sélectionnez le département 44 au moyen de l'outil de sélection :
-
-
 
 [![Département 44 sélectionné (en jaune)](illustrations/9_1_selection_44.jpg)](illustrations/9_1_selection_44.jpg "illustrations/9_1_selection_44.jpg")
 
 Puis rendez-vous dans la [boîte à outils de traitements → Recouvrement de vecteur → Couper
 
 ![Emplacement de l'outil de découpage dans la boîte à outils](illustrations/9_1_decouper_emplacement.jpg)](#thumb "#thumb")
-
-
 
 [![Fenêtre de l'outil découper](illustrations/9_1_decouper_fenetre.jpg)](illustrations/9_1_decouper_fenetre.jpg "illustrations/9_1_decouper_fenetre.jpg")
 
@@ -70,122 +52,75 @@ Puis rendez-vous dans la [boîte à outils de traitements → Recouvrement de ve
 * Découpé : cliquez sur **...**, sélectionnez l'option **Enregistrer vers un fichier**, et choisissez l'endroit où la couche sera créée, et son nom : *coursdeau_osm_44* (au format GeoPackage)
 * Cliquez sur **Exécuter**
 
-
 Patientez... La nouvelle couche est ajoutée :
-
-
 
 [![Les 2 couches de départ et la couche résultat en rouge](illustrations/9_1_decoupage_resultat.jpg)](illustrations/9_1_decoupage_resultat.jpg "illustrations/9_1_decoupage_resultat.jpg")
 
 Vérifiez ses données attributaires : **elle contient les mêmes champs que la couche de cours d'eau initiale**. Les valeurs des champs ne sont pas recalculées (sauf dans le cas de champs virtuels) : s'il y a un champ longueur, ses valeurs seront donc erronées.
 
-
-
 Contrairement à une requête spatiale, le découpage modifie les entités en les **découpant** suivant les limites de la couche de découpage. Une requête se borne à **sélectionner** par exemple les cours d'eau à l'intérieur d'un département, ou intersectant ce département.
-
-
 
 [![Cours d'eau intersectant un département : il dépasse du département](illustrations/9_1_selection.jpg)](illustrations/9_1_selection.jpg "illustrations/9_1_selection.jpg")
 [![Cours d'eau découpé par un département](illustrations/9_1_decoupage.jpg)](illustrations/9_1_decoupage.jpg "illustrations/9_1_decoupage.jpg")
 A gauche, cours d'eau intersectant un département sélectionné par une requête spatiale (en jaune). A droite, cours d'eau découpé par un département (en rouge).
 
-#### Sans oublier de penser aux systèmes de coordonnées...
-
+#### Sans oublier de penser aux systèmes de coordonnées
 
 Avez-vous noté que les 2 couches de départ ont **2 SCR différents** ? (WGS84 pour les cours d'eau, RGF93/Lambert 93 pour les départements). Pourtant, le découpage fonctionne correctement. Ce comportement n'existe que depuis la version 3 de QGIS, la version 2.18 retournait dans ce cas une couche vide.
 
-
 **Même si ça n'est plus obligatoire, cela reste une bonne pratique de travailler avec des couches dans le même SCR.**
-
 
 ### Création d'une zone tampon autour d'un cours d'eau
 
-
 #### Qu'est-ce qu'une zone tampon ?
 
-
 Une zone tampon (aussi appelée « buffer ») est une **zone épousant la forme des objets d'une couche, d'une largeur donnée**. Si elles sont tracées autour de points, les zones tampons seront des cercles. Autour de lignes et de polygones, ce sera des polygones de forme variable. Une zone tampon peut servir par exemple à modéliser une zone inondable, un périmètre de sécurité, une zone d'achalandage...
-
-
 
 [![Exemples de zones tampon autour d'un point, d'une ligne et d'un polygone](illustrations/9_1_principe_tampon.jpg)](illustrations/9_1_principe_tampon.svg "illustrations/9_1_principe_tampon.svg")
 
 L'objectif est ici de créer une zone tampon de 100 mètres autour de l'Erdre. Cette zone pourra représenter par exemple une zone inondable, ou bien une zone s'interposant entre rivière et cultures.
 
-
 #### Sélection d'un cours d'eau
-
-
-
-
 
 Comment faire pour sélectionner le cours d'eau dont le nom est **L'Erdre** de la couche *coursdeau_osm_44* ?
 
-
 2 méthodes au choix :
-
 
 1/ Sélectionner à la main dans la table attributaire les lignes où la valeur du champ **name** est **L'Erdre** (pour les trouver plus facilement, cliquez sur l'intitulé de colonne **name** pour classer les lignes par nom)
 
-
 2/ [utiliser une requête attributaire](06_01_req_attrib.php "06_01_req_attrib.php") : **"name" = 'L\'Erdre'**. Attention, le caractère **\ (antislash)** est nécessaire avant l'apostrophe, pour que ce dernier ne soit pas considéré comme la fin de la chaîne de caractères.
-
-
-
 
 [![l'Erdre sélectionné, dans la carte et dans la table](illustrations/9_1_selection_erdre.jpg)](illustrations/9_1_selection_erdre.jpg "illustrations/9_1_selection_erdre.jpg")
 
 Ce cours d'eau est donc constitué de plusieurs entités.
 
-
-
 #### Création d'une zone tampon autour de la sélection
 
-
-
 Pour créer la zone tampon : **Boîte à outils de traitements → Géométrie vectorielle → Tampon**
-
-
 
 [![Paramètrage de l'outil zone tampon, où l'on voit que les unités de la couche coursdeau_osm_44 sont les degrés](illustrations/9_1_tampon_degres.jpg)](illustrations/9_1_tampon_degres.jpg "illustrations/9_1_tampon_degres.jpg")
 
 Sélectionnez la couche source : *coursdeau_osm_44*. En-dessous, la distance permet de paramétrer la taille de la zone tampon.
 
-
 Vous pouvez voir que **les unités de taille sont les degrés !** En effet, notre couche de cours d'eau étant en WGS84, il s'agit des unités de cette couche.
-
-
 
 Avant d'aller plus loin, il nous faudra donc **projeter notre couche** pour pouvoir fixer une taille en mètres. Nous utiliserons pour cela le système officiel français, à savoir le **RGF93/Lambert-93 (code EPSG 2154)**.
 
-
-
 Fermez la fenêtre de l'outil de zone tampon **sans créer la zone tampon**.
-
 
 [Modifiez le SCR](02_04_changer_systeme.php#II42 "02_04_changer_systeme.php#II42") de la couche *coursdeau_osm_44*, pour passer du WGS84 vers le **RGF93/Lambert-93 (code EPSG 2154)** grâce à l'outil **Reprojeter une couche** (Outils généraux pour les vecteurs) de la boîte à outils.
 
-
 Nommez la nouvelle couche *coursdeau_osm_44_L93*.
-
 
 Vérifiez dans les propriétés de cette nouvelle couche, rubrique **Source**, que son SCR soit bien le Lambert 93 :
 
-
-
 [![Propriétés de la couche, rubrique Source : le SCR est le RGF93/Lambert-93](illustrations/9_1_verif_l93.jpg)](illustrations/9_1_verif_l93.jpg "illustrations/9_1_verif_l93.jpg")
-
 
 Attention, si le SCR n'est pas le bon, ne le modifiez pas ici ! Utilisez l'outil **Reprojeter une couche** de la boîte à outils. Modifier le SCR et [redéfinir le SCR](02_04_changer_systeme.php#II43 "02_04_changer_systeme.php#II43") sont 2 manipulations différentes.
 
-
-
 [Sélectionnez à nouveau l'Erdre](09_01_vecteur.php#IX12b "09_01_vecteur.php#IX12b").
 
-
 Vous pouvez ensuite créer la zone tampon :
-
-
 
 [![Fenêtre de l'outil de zone tampon](illustrations/9_1_tampon_fenetre.jpg)](illustrations/9_1_tampon_fenetre.jpg "illustrations/9_1_tampon_fenetre.jpg")
 
@@ -195,29 +130,20 @@ Vous pouvez ensuite créer la zone tampon :
 * **Regrouper le résultat :** cette case permet de fusionner toutes les zones tampon qui seront créées ; sinon, une zone tampon est créée par entité de la couche source. Cochez cette case pour cet exercice (cf. image ci-dessous)
 * Mis en tampon : cliquez tout à droite sur le bouton **... → Enregistrer vers un fichier...** choisir le nom : *Erdre_tampon100m.gpkg* par exemple et l'emplacement de la couche qui sera créée
 
-
-
 [![Détail du résultat de la zone tampon sans regrouper](illustrations/9_1_tampon_nonregroupe.jpg)](illustrations/9_1_tampon_nonregroupe.jpg "illustrations/9_1_tampon_nonregroupe.jpg")
 [![Détail du résultat de la zone tampon en regroupant](illustrations/9_1_tampon_regroupe.jpg)](illustrations/9_1_tampon_regroupe.jpg "illustrations/9_1_tampon_regroupe.jpg")
 Détail du résultat de la zone tampon : à gauche sans regrouper, à droite en regroupant.
 
 Cliquez sur **Exécuter**, observez le résultat :
 
-
-
 [![Résultat de la zone tampon](illustrations/9_1_res_tampon_erdre.jpg)](illustrations/9_1_res_tampon_erdre.jpg "illustrations/9_1_res_tampon_erdre.jpg")
-
 
 #### Pour aller plus loin : détail des autres paramètres
 
-
 Les autres paramètres de l'outil de zone tampon sont moins fréquemment modifiés et vous pouvez souvent laisser les valeurs par défaut. Voici leur description pour information, que vous pouvez également retrouver dans l'aide (partie droite de la fenêtre de l'outil) ou bien la [documentation QGIS](https://docs.qgis.org/latest/fr/docs/user_manual/processing_algs/qgis/vectorgeometry.html#buffer "https://docs.qgis.org/latest/fr/docs/user_manual/processing_algs/qgis/vectorgeometry.html#buffer") :
-
 
 * **Segments :** plus cette valeur est élevée, plus les contours de la zone seront « arrondis ». Il s'agit en fait du nombre de segments utilisés pour représenter un quart de cercle.
 * **Style d'extrémité :** il s'agit de la manière dont les zones tampons sont « terminées ». 3 valeurs sont possibles : rond, plat et carré
-
-
 
 [![Style d'extrémité rond pour une zone tampon](illustrations/9_1_tampon_extr_rond.jpg)](illustrations/9_1_tampon_extr_rond.jpg "illustrations/9_1_tampon_extr_rond.jpg")
 [![Style d'extrémité plat pour une zone tampon](illustrations/9_1_tampon_extr_plat.jpg)](illustrations/9_1_tampon_extr_plat.jpg "illustrations/9_1_tampon_extr_plat.jpg")
@@ -225,8 +151,6 @@ Les autres paramètres de l'outil de zone tampon sont moins fréquemment modifi�
 Différents types d'extrémité pour les zones tampon : de gauche à droite, rond, plat et carré.
 
 * **Style de jointure :** les zones tampons sont créées en « décalant » les sommets d'une entité, ici une ligne. Il existe plusieurs manières de réaliser ce décalage, ce que contrôle ce paramètre. 3 valeurs sont possibles : rond, angle droit et oblique.
-
-
 
 [![Style de jointure rond pour une zone tampon](illustrations/9_1_tampon_jointure_rond.jpg)](illustrations/9_1_tampon_jointure_rond.jpg "illustrations/9_1_tampon_jointure_rond.jpg")
 [![Style de jointure angle droit pour une zone tampon](illustrations/9_1_tampon_jointure_angledroit.jpg)](illustrations/9_1_tampon_jointure_angledroit.jpg "illustrations/9_1_tampon_jointure_angledroit.jpg")
@@ -236,34 +160,23 @@ Différents types de jointure pour les zones tampon : de gauche à droite, rond,
 
 * **Limite d'angle droite :** ce paramètre n'est utilisé que pour les styles jointure à angle droit. D'après l'aide, il contrôle « la distance maximale de la courbe de décalage ». Personnellement je trouve cette définition peu claire, et d'après mes observations les différences sont minimes (on peut les observer en passant de 1 à 2 par exemple). Ecrivez-moi si vous en savez plus !
 
-
 ### Données communes entre deux couches : intersection
-
 
 #### Qu'est-ce qu'une intersection ?
 
-
 L'intersection entre deux couches crée une troisième couche, avec uniquement les parties communes aux deux couches.
-
-
 
 [![Exemple d'une intersection entre une cercle et un rectangle](illustrations/9_1_inters_principe.jpg)](illustrations/9_1_inters_principe.svg "illustrations/9_1_inters_principe.svg")
 La zone hachurée correspond à l'intersection entre le rectangle et le cercle.
 
 #### Intersection entre communes et zone tampon
 
-
 L'idée sera ici de créer la couche d'intersection entre les communes et la zone tampon autour de l'Erdre créée ci-dessus. Ceci pourrait permettre de visualiser par exemple pour chaque commune la partie qui se trouve en zone inondable.
-
-
 
 Ajoutez la couche *[COMMUNE_44](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/TutoQGIS_09_AnalyseSpat.zip")* au projet.
 
-
 **Boîte à outils de traitements → Recouvrement de vecteur → Intersection**
  :
-
-
 
 [![Paramètrage de l'outil d'intersection](illustrations/9_1_inters_fenetre.jpg)](illustrations/9_1_inters_fenetre.jpg "illustrations/9_1_inters_fenetre.jpg")
 
@@ -273,61 +186,39 @@ Ajoutez la couche *[COMMUNE_44](donnees/TutoQGIS_09_AnalyseSpat.zip "donnees/Tut
 * Champs à conserver : cette option permet de choisir les champs de la couche de superposition. Ici, nous garderons tous les champs et nous n'utiliserons donc pas ce paramètre
 * Intersection : cliquez tout à droite sur le bouton **... → Enregistrer vers un fichier...** choisir le nom : *inters_communes_tampon.gpkg* par exemple et l'emplacement de la couche qui sera créée
 
-
 Cliquez sur **Exécuter**, observez le résultat :
-
-
 
 [![Résultat de l'intersection, superposé à la couche de communes](illustrations/9_1_inters_resultat.jpg)](illustrations/9_1_inters_resultat.jpg "illustrations/9_1_inters_resultat.jpg")
 
 Ouvrez la table attributaire de cette couche : notez que les champs des deux couches sont présents.
 
-
-
-#### Si on voulait aller plus loin...
-
+#### Si on voulait aller plus loin
 
 A titre d'exemple d'application, comment faire pour obtenir pour chaque commune le pourcentage de sa surface en zone inondable ?
 
-
 Plusieurs étapes seraient nécessaires :
-
 
 1. Ajouter un champ Surface à la couche d'intersection, en calculant pour chaque entité sa surface par exemple en hectares
 2. Joindre ce champ Surface à la couche de communes, en effectuant une jointure attributaire sur les codes INSEE
 3. Ajouter un champ à la couche de communes et y calculer le pourcentage en zone inondable, en utilisant le champ Surface joint et la surface de la commune
 
-
 En combinant les outils vus dans ce tutoriel (et d'autres !), on peut essayer de répondre à des questions sur des données spatiales.
-
 
 ### Relancer rapidement un outil à l'aide de l'historique
 
-
 Cette astuce est valable pour tous les outils de la boîte à outils, sur les vecteurs, rasters ou autres !
 
-
-
 Rendez-vous dans le **menu Traitement → Historique** :
-
-
 
 [![Fenêtre de l'historique](illustrations/9_1_historique.jpg)](illustrations/9_1_historique.jpg "illustrations/9_1_historique.jpg")
 
 Dans cette fenêtre, chaque ligne correspond à une fois où vous avez lancé un outil de la boîte à outils, le tout classé par ordre chronologique.
 
-
 Cliquez sur une des lignes : dans la partie basse de la fenêtre, vous pouvez voir la commande Python correspondante, que le logiciel a lancé pour exécuter l'outil (voir partie [XI.4](11_04_python.php "11_04_python.php")).
-
 
 **Si vous double-cliquez sur une ligne, la fenêtre de l'outil se lance avec exactement le même paramétrage que celui utilisé cette fois-là.** Ce qui est très utile en particulier pour les outils avec beaucoup de paramètres, par exemple quand on fait des tests et qu'on est amené à relancer plusieurs fois un outil.
 
-
-
-
-
 [chapitre précédent](09_00_analyse_spatiale.php "09_00_analyse_spatiale.php")
 [chapitre suivant](09_02_raster.php "09_02_raster.php")
-
 
 [haut de page](#wrap "#wrap")
