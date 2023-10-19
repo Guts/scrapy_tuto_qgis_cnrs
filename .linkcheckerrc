@@ -1,0 +1,5 @@
+[filtering]
+ignore=
+  theme/
+  uploads/
+  img/
