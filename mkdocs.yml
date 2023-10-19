@@ -1,0 +1,142 @@
+site_name: Tutoriel QGIS
+site_description: >-
+  La base de connaissances partagée d'Oslandia.
+  Si ce wiki était imprimé et relié, ce serait notre livre sacré.
+site_url: https://oslandia.pages.oslandia.io/wiki/
+# Repository
+repo_name: "oslandia/wiki"
+repo_url: "https://git.oslandia.net/Oslandia/wiki/"
+edit_uri: "-/edit/master/content/"
+
+# Custom folder structure
+docs_dir: "content"
+site_dir: "./build/mkdocs/site"
+
+# Plugins
+plugins:
+  - awesome-pages
+  - glightbox:
+      touchNavigation: true
+      effect: zoom
+      height: auto
+      zoomable: true
+      draggable: true
+      skip_classes:
+        - emojione
+        - twemoji
+      auto_caption: true
+      caption_position: bottom
+  - minify:
+      minify_html: true
+      minify_js: false
+      htmlmin_opts:
+        remove_comments: true
+  - search:
+      lang: fr
+  - tags:
+      tags_file: tags.md
+
+# Theme
+theme:
+  name: "material"
+  features:
+    - content.action.edit
+    - content.code.copy
+    - content.tabs.link
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  font:
+    code: Ubuntu Mono
+    text: Ubuntu
+  icon:
+    repo: fontawesome/brands/gitlab
+    tag:
+      default: fontawesome/solid/tag
+
+  language: "fr"
+  logo: theme/assets/images/icon.png
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Basculer en mode clair
+
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Basculer en mode sombre
+
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: utiliser le paramètre système
+
+extra:
+  social:
+    - icon: "fontawesome/regular/newspaper"
+      link: "https://oslandia.pages.oslandia.io/bulletins_hebdomadaires/"
+      name: "Bulletins hebdomadaires"
+    - icon: "fontawesome/solid/box-archive"
+      link: "https://oslandia.pages.oslandia.io/compte_rendus/"
+      name: "Compte-rendus"
+    - icon: "fontawesome/solid/rss"
+      link: "https://oslandia.pages.oslandia.io/wiki/feed_rss_created.xml"
+      name: "S'abonner aux nouveaux contenus via RSS"
+
+extra_css:
+  - theme/assets/stylesheets/extra.css
+
+# Extensions to enhance markdown - see: https://squidfunk.github.io/mkdocs-material/getting-started/#extensions
+markdown_extensions:
+  - abbr
+  - attr_list
+  - admonition
+  - footnotes
+  - md_in_html
+  - meta
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.smartsymbols
+  # https://facelessuser.github.io/pymdown-extensions/extensions/snippets/
+  - pymdownx.snippets:
+      auto_append: [content/toc_nav_ignored/glossaire.md]
+      base_path:
+        - "."
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  # Permalinks - https://squidfunk.github.io/mkdocs-material/extensions/permalinks/
+  - toc:
+      permalink: "#"
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
