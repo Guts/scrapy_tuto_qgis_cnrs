@@ -39,13 +39,24 @@ class TutoCnrsPipeline:
             f"PIPELINE HERE: {item.get('title')}, {item.get('kind')}, {item.get('url_rel')}"
         )
 
-        out_filename = folder_output.joinpath(
-            f"{item.get('section_number')}_"
-            f"{item.get('page_number')}_"
-            f"{clean_title(item.get('title')).strip()}"
-            f".md"
-        )
-        out_filename.write_text(item.get("body"))
+        if item.get("kind") == "section":
+            # on stocke la description de la section dans un fichier
+            section_index = folder_output.joinpath(
+                f"{item.get('section_number')}_"
+                f"{clean_title(item.get('title')).strip()}/"
+                "index.md"
+            )
+            section_index.parent.mkdir(exist_ok=True)
+            section_index.write_text(item.get("body"))
+        elif item.get("kind") == "tutoriel":
+            tutoriel_filename = folder_output.joinpath(
+                f"{item.get('section_number')}_"
+                f"{item.get('page_number')}_"
+                f"{clean_title(item.get('title')).strip()}"
+                f".md"
+            )
+
+            tutoriel_filename.write_text(item.get("body"))
 
 
 class JsonWriterPipeline:
