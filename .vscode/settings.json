@@ -36,4 +36,16 @@
     "autoDocstring.guessTypes": true,
     "autoDocstring.docstringFormat": "google-notypes",
     "autoDocstring.generateDocstringOnEnter": false,
+    "yaml.schemas": {
+        "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs*.yml",
+        "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml",
+        "https://json.schemastore.org/markdownlint.json": ".markdownlint*",
+    },
+    "yaml.customTags": [
+        "!ENV scalar",
+        "!ENV sequence",
+        "tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg",
+        "tag:yaml.org,2002:python/name:material.extensions.emoji.twemoji",
+        "tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format"
+    ]
 }
