@@ -1,5 +1,5 @@
 
-# II.4 Passer d'un système de coordonnées à un autre
+## II.4 Passer d'un système de coordonnées à un autre
 
 * [Modifier le SCR du projet](#II41 "#II41")
 * [Modifier le SCR d'une couche](#II42 "#II42")
@@ -143,7 +143,7 @@ Nos couches ayant un SCR correctement défini, cette manip ne nous est pas utile
 * Pour redéfinir le SCR d'une couche de manière permanente (crée une nouvelle couche) : boîte à outils → Assigner une projection
 * Idem que ci-dessus mais ne crée pas de nouvelle couche, uniquement pour les shapefiles : boîte à outils → Définir la projection du fichier shapefile
 
-### Modifier et redéfinir le SCR : à ne pas confondre
+### Modifier et redéfinir le SCR : à ne pas confondre !
 
 La confusion entre les 2 manipulations **modifier le SCR** (outil reprojeter) et **(re)définir le SCR** (dans les propriétés de la couche) est une source d'erreur très courante !
 

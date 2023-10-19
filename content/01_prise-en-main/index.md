@@ -13,6 +13,6 @@ Notions abordées :
 * Formats de données vecteur et raster
 * Espace de travail : le projet QGZ
 
-Les données pour cette partie ainsi qu'une version PDF du tutoriel sont accessibles dans la rubrique  [téléchargement](telechargement.php "telechargement.php").
+Les données pour cette partie ainsi qu'une version PDF du tutoriel sont accessibles dans la rubrique [téléchargement](telechargement.php "telechargement.php").
 
 [démarrer](01_01_SIG.php "01_01_SIG.php")
