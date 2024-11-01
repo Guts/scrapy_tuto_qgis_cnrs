@@ -12,7 +12,7 @@ authors = [{ name = "Julien Moura", email = "geotribu@gmail.com" }]
 dependencies = ["markdownify >= 0.11", "Pillow >= 10.0.1", "scrapy >= 2.11,<3"]
 
 [project.optional-dependencies]
-dev = ["black", "isort >= 5.12.0", "pre-commit >3,<4", "ruff >= 0.0.281"]
+dev = ["black", "isort >= 5.12.0", "pre-commit >3,<5", "ruff >= 0.0.281"]
 
 
 [tool.flake8]
