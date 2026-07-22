@@ -1,5 +1,5 @@
 black
 flake8-builtins>=3.1.0
-flake8-isort>=6
+flake8-isort>=7.0.0
 isort>=5.7
 pre-commit>=3.2,<5
