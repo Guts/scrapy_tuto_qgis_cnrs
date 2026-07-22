@@ -1,5 +1,5 @@
 mkdocs-awesome-pages-plugin>=2.7,<3
 mkdocs-glightbox>=0.5.2,<1
-mkdocs-material>=9.5,<10
+mkdocs-material>=9.7.7,<10
 mkdocs-minify-plugin>=0.7,<1
 mkdocs-rss-plugin>=1.19.0,<2
